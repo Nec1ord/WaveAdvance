@@ -49,6 +49,9 @@ android {
             resValue "string", "app_name", APP_NAME
         }
     }
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
