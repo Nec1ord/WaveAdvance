@@ -24,8 +24,20 @@ android {
             versionCode 10000000
         }
 
-        printf("\n--------VERSION DATA--------\n- CODE: " + versionCode +
-                "\n- NAME: " + versionName + "\n----------------------------\n")
+        printf("\n--------VERSION DATA--------" +
+                "\n- CODE: %s" +
+                "\n- NAME: %s" +
+                "\n----------------------------\n",
+                versionCode, versionName)
+    }
+    signingConfigs {
+        release {
+            // should obtain this data via task (:obtainSigningConfigs)
+            storeFile = null
+            storePassword = null
+            keyAlias = null
+            keyPassword = null
+        }
     }
     buildTypes {
         debug {
@@ -35,6 +47,7 @@ android {
             debuggable false
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     productFlavors {
@@ -59,3 +72,28 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.3.0'
 }
+
+// Task -> Obtain signingConfigs.release data from 'signing.properties' file
+task obtainSigningConfigs << {
+    def props = new Properties()
+    def propFile = new File('signing.properties')
+    if (propFile.canRead()){
+        props.load(new FileInputStream(propFile))
+        if (props != null &&
+                props.containsKey('storeFile') &&
+                props.containsKey('storePassword') &&
+                props.containsKey('keyAlias') &&
+                props.containsKey('keyPassword')) {
+            android.signingConfigs.release.storeFile = file(props['storeFile'])
+            android.signingConfigs.release.storePassword = props['storePassword']
+            android.signingConfigs.release.keyAlias = props['keyAlias']
+            android.signingConfigs.release.keyPassword = props['keyPassword']
+        } else {
+            throw new GradleException('Some entries in \'signing.properties\' are missing')
+        }
+    } else {
+        throw new GradleException('\'signing.properties\' not found')
+    }
+}
+// Obtain signing data before validating it
+gradle.projectsEvaluated { validateReleaseSigning.dependsOn(obtainSigningConfigs) }
