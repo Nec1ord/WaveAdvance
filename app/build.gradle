@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 23
@@ -6,21 +8,123 @@ android {
 
     defaultConfig {
         applicationId "com.nikolaykul.waveadvance"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+
+        // Generate versionCode and versionName. Print them as well
+        def longVersionName = "git -C ${projectDir} describe --tags --long".execute().text.trim()
+        if (longVersionName) {
+            //noinspection GroovyUnusedAssignment
+            def (fullVersionTag, versionBuild, gitSha) = longVersionName.tokenize('-')
+            def (versionMajor, versionMinor, versionPatch) = fullVersionTag.tokenize('.')
+            versionName "$versionMajor.$versionMinor.$versionPatch"
+            versionCode versionMajor.toInteger() * 10000000 +
+                    versionMinor.toInteger() * 100000 +
+                    versionPatch.toInteger() * 1000 +
+                    versionBuild.toInteger()
+        } else {
+            versionName "1.0.0"
+            versionCode 10000000
+        }
+
+        printf("\n--------VERSION DATA--------" +
+                "\n- CODE: %s" +
+                "\n- NAME: %s" +
+                "\n----------------------------\n",
+                versionCode, versionName)
+    }
+    signingConfigs {
+        release {
+            // should obtain this data via task (:obtainSigningConfigs)
+            storeFile = null
+            storePassword = null
+            keyAlias = null
+            keyPassword = null
+        }
     }
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        release {
+            debuggable false
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+    productFlavors {
+        def APP_NAME = "Wave Advance"
+        dev {
+            applicationIdSuffix ".dev"
+            buildConfigField 'boolean', 'ENABLE_LOGGING', 'true'
+            resValue "string", "app_name", APP_NAME + " Develop"
+        }
+        prod {
+            buildConfigField 'boolean', 'ENABLE_LOGGING', 'false'
+            resValue "string", "app_name", APP_NAME
+        }
+    }
+    dataBinding {
+        enabled = true
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
+    final DAGGER_VERSION = '2.2'
+
+    def daggerCompiler = "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
+
+    // App
+    compile 'com.annimon:stream:1.0.9'
     compile 'com.android.support:appcompat-v7:23.3.0'
+    compile 'com.jakewharton.timber:timber:3.1.0'
+
+    // Material
+    compile 'com.afollestad.material-dialogs:core:0.8.5.9@aar'
+    compile 'com.rengwuxian.materialedittext:library:2.1.4'
+
+    // Rx
+    compile "io.reactivex:rxandroid:1.2.0"
+    compile "io.reactivex:rxjava:1.1.5"
+
+    // Dagger 2
+    compile "com.google.dagger:dagger:$DAGGER_VERSION"
+    provided 'org.glassfish:javax.annotation:10.0-b28'
+
+    // Test
+    testCompile 'junit:junit:4.12'
+
+    // Apt
+    apt daggerCompiler
+    testApt daggerCompiler
 }
+
+// Task -> Obtain signingConfigs.release data from 'signing.properties' file
+task obtainSigningConfigs << {
+    def props = new Properties()
+    def propFile = new File('signing.properties')
+    if (propFile.canRead()){
+        props.load(new FileInputStream(propFile))
+        if (props != null &&
+                props.containsKey('storeFile') &&
+                props.containsKey('storePassword') &&
+                props.containsKey('keyAlias') &&
+                props.containsKey('keyPassword')) {
+            android.signingConfigs.release.storeFile = file(props['storeFile'])
+            android.signingConfigs.release.storePassword = props['storePassword']
+            android.signingConfigs.release.keyAlias = props['keyAlias']
+            android.signingConfigs.release.keyPassword = props['keyPassword']
+        } else {
+            throw new GradleException('Some entries in \'signing.properties\' are missing')
+        }
+    } else {
+        throw new GradleException('\'signing.properties\' not found')
+    }
+}
+// Obtain signing data before validating it
+gradle.projectsEvaluated { validateReleaseSigning.dependsOn(obtainSigningConfigs) }
