@@ -17,6 +17,6 @@ public abstract class Presenter<T extends MvpView> {
         init();
     }
 
-    abstract void init();
-    abstract void destroy();
+    public abstract void init();
+    public abstract void destroy();
 }
