@@ -83,6 +83,10 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.jakewharton.timber:timber:3.1.0'
 
+    // Material
+    compile 'com.afollestad.material-dialogs:core:0.8.5.9@aar'
+    compile 'com.rengwuxian.materialedittext:library:2.1.4'
+
     // Rx
     compile "io.reactivex:rxandroid:1.2.0"
     compile "io.reactivex:rxjava:1.1.5"
