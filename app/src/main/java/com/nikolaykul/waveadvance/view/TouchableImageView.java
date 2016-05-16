@@ -21,6 +21,7 @@ public class TouchableImageView extends ImageView implements View.OnTouchListene
     private Pair<Float, Float> mDot;
     private int mDotRadius;
     private Paint mPaint;
+    private OnTouchListener mListener;
 
     public TouchableImageView(Context context) {
         super(context);
@@ -52,6 +53,10 @@ public class TouchableImageView extends ImageView implements View.OnTouchListene
         }
     }
 
+    @Override public void setOnTouchListener(OnTouchListener listener) {
+        mListener = listener;
+    }
+
     @Override protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (isInEditMode() || null == mDot) return;
@@ -65,6 +70,7 @@ public class TouchableImageView extends ImageView implements View.OnTouchListene
             final Pair<Float, Float> newDot = new Pair<>(event.getX(), event.getY());
             if (!newDot.equals(mDot)) {
                 mDot = newDot;
+                saveDelegateOnTouch(v, event);
                 Timber.i("Dot(%f, %f)", mDot.first, mDot.second);
                 this.invalidate();
             }
@@ -72,10 +78,14 @@ public class TouchableImageView extends ImageView implements View.OnTouchListene
         return true;
     }
 
+    private void saveDelegateOnTouch(View v, MotionEvent event) {
+        if (null != mListener) mListener.onTouch(v, event);
+    }
+
     private void init(Context context, AttributeSet attrs) {
+        super.setOnTouchListener(this);
         setFocusable(true);
         setFocusableInTouchMode(true);
-        setOnTouchListener(this);
 
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
