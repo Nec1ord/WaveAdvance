@@ -2,6 +2,7 @@ package com.nikolaykul.waveadvance.ui.main;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -22,6 +23,7 @@ public class MainActivity extends BaseActivity implements MainMvpView, View.OnTo
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mBinding.imageView.setOnTouchListener(this);
+        initToolbar(mBinding.toolbar);
         mPresenter.initWithView(this);
     }
 
@@ -44,6 +46,10 @@ public class MainActivity extends BaseActivity implements MainMvpView, View.OnTo
     private void displayCoordinates(float x, float y) {
         mBinding.tvX.setText(String.format(Locale.getDefault(), "X = %f", x));
         mBinding.tvY.setText(String.format(Locale.getDefault(), "Y = %f", y));
+    }
+
+    private void initToolbar(Toolbar toolbar) {
+        toolbar.setTitle(R.string.activity_main_title);
     }
 
 }
