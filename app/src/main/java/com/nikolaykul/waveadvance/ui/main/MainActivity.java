@@ -3,26 +3,26 @@ package com.nikolaykul.waveadvance.ui.main;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.MotionEvent;
-import android.view.View;
+import android.util.Pair;
 
 import com.nikolaykul.waveadvance.R;
 import com.nikolaykul.waveadvance.databinding.ActivityMainBinding;
 import com.nikolaykul.waveadvance.di.component.ActivityComponent;
+import com.nikolaykul.waveadvance.event.OnTapListener;
 import com.nikolaykul.waveadvance.ui.base.BaseActivity;
 
 import java.util.Locale;
 
 import javax.inject.Inject;
 
-public class MainActivity extends BaseActivity implements MainMvpView, View.OnTouchListener {
+public class MainActivity extends BaseActivity implements MainMvpView, OnTapListener {
     @Inject MainPresenter mPresenter;
     private ActivityMainBinding mBinding;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        mBinding.imageView.setOnTouchListener(this);
+        mBinding.imageView.setOnTapListener(this);
         initToolbar(mBinding.toolbar);
         mPresenter.initWithView(this);
     }
@@ -31,11 +31,12 @@ public class MainActivity extends BaseActivity implements MainMvpView, View.OnTo
         component.inject(this);
     }
 
-    @Override public boolean onTouch(View v, MotionEvent event) {
-        final float x = event.getX();
-        final float y = event.getY();
-        displayCoordinates(x, y);
-        return true;
+    @Override public void onSingleTap(Pair<Float, Float> dot) {
+        displayCoordinates(dot.first, dot.second);
+    }
+
+    @Override public void onDoubleTap(Pair<Float, Float> dot) {
+        displayCoordinates(dot.first, dot.second);
     }
 
     @Override protected void onDestroy() {
