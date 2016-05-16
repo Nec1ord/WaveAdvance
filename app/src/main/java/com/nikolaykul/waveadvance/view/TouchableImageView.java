@@ -54,7 +54,7 @@ public class TouchableImageView extends ImageView implements View.OnTouchListene
 
     @Override protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (isInEditMode()) return;
+        if (isInEditMode() || null == mDot) return;
 
         setImageDrawable(getBackground());
         canvas.drawCircle(mDot.first, mDot.second, mDotRadius, mPaint);
@@ -63,7 +63,7 @@ public class TouchableImageView extends ImageView implements View.OnTouchListene
     @Override public boolean onTouch(View v, MotionEvent event) {
         if (MotionEvent.ACTION_DOWN == event.getAction()) {
             final Pair<Float, Float> newDot = new Pair<>(event.getX(), event.getY());
-            if (!mDot.equals(newDot)) {
+            if (!newDot.equals(mDot)) {
                 mDot = newDot;
                 Timber.i("Dot(%f, %f)", mDot.first, mDot.second);
                 this.invalidate();
