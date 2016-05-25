@@ -46,6 +46,12 @@
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/tv_result"
+                style="@style/AppTheme.MainTextView"
+                android:layout_height="@dimen/view_height_small"
+                />
+
         </android.support.design.widget.AppBarLayout>
 
         <ImageView
