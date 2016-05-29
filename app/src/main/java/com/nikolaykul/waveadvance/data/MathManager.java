@@ -26,11 +26,11 @@ public class MathManager {
     }
 
     public double u(double x, double y) {
-        return coordinateFunction(x - x0, getLength(x, y));
+        return coordinateFunction(x - x0, getLengthFromTheSource(x, y));
     }
 
     public double v(double x, double y) {
-        return coordinateFunction(y - y0, getLength(x, y));
+        return coordinateFunction(y - y0, getLengthFromTheSource(x, y));
     }
 
     private double coordinateFunction(double shift, double r) {
@@ -55,29 +55,29 @@ public class MathManager {
                 .multiply(2.0)
                 .sqrt();
         final Complex arg2 = z
-                .subtract((3.0 * FastMath.PI) / 4.0)
+                .subtract(3.0 / 4.0 * FastMath.PI)
                 .exp();
         return arg1.multiply(arg2);
     }
 
-    private double getLength(double x, double y) {
+    private double getLengthFromTheSource(double x, double y) {
         final double xSqr = (x - x0) * (x - x0);
         final double ySqr = (y - y0) * (y - y0);
         return FastMath.sqrt(xSqr + ySqr);
     }
 
     private void initDefaultProperties() {
-        final double p = 1.21;
-        final double k = p * (omega * omega);
         x0 = 20.11;
         y0 = 20.43;
         omega = 12.2;
-        mu = 86.2;
-        lambda = 123.21;
+        mu = 6.2;
+        lambda = 13.21;
         gamma = (3 * lambda + 2 * mu) * 0.42;
         kappa = 23.2;
-        kappa1 = k / (lambda + 2 * mu);
         k1 = omega / kappa;
+        final double p = 0.21;
+        final double k = p * (omega * omega);
+        kappa1 = k / (lambda + 2 * mu);
     }
 
     private Complex computePreSolvedPart() {
