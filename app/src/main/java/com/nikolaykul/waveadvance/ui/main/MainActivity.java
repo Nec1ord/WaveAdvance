@@ -57,8 +57,12 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
     }
 
     @Override public void onDoubleTap(Pair<Float, Float> dot) {
+        int width = mBinding.imageView.getWidth();
+        int height = mBinding.imageView.getHeight();
+        final float x = dot.first / width * 100;
+        final float y = dot.second / height * 100;
         displayCoordinates(dot.first, dot.second);
-        mPresenter.computeNewCoordinate(dot);
+        mPresenter.computeNewCoordinate(Pair.create(x, y));
     }
 
     @Override protected void onDestroy() {
