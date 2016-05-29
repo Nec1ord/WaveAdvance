@@ -2,6 +2,8 @@ package com.nikolaykul.waveadvance.ui.main;
 
 import android.util.Pair;
 
+import com.nikolaykul.waveadvance.data.MathManager;
+import com.nikolaykul.waveadvance.di.scope.PerActivity;
 import com.nikolaykul.waveadvance.ui.base.Presenter;
 
 import javax.inject.Inject;
@@ -11,9 +13,12 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
+@PerActivity
 public class MainPresenter extends Presenter<MainMvpView> {
+    private final MathManager mManager;
 
-    @Inject public MainPresenter() {
+    @Inject public MainPresenter(MathManager manager) {
+        this.mManager = manager;
     }
 
     @Override
@@ -40,15 +45,11 @@ public class MainPresenter extends Presenter<MainMvpView> {
     }
 
     private double functionX(Pair<Float, Float> pair) {
-        final float x = pair.first;
-        final float y = pair.second;
-        return Math.abs(Math.exp(x) + Math.exp(y));
+        return mManager.u(pair.first, pair.second);
     }
 
     private double functionY(Pair<Float, Float> pair) {
-        final float x = pair.first;
-        final float y = pair.second;
-        return Math.abs(Math.sin(x) + Math.cos(y));
+        return mManager.v(pair.first, pair.second);
     }
 
 }
