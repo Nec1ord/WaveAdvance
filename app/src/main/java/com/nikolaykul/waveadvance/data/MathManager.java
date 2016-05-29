@@ -3,6 +3,7 @@ package com.nikolaykul.waveadvance.data;
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.util.FastMath;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
@@ -19,7 +20,7 @@ public class MathManager {
     private double k1;
     private Complex preSolvedPart;
 
-    public MathManager() {
+    @Inject public MathManager() {
         initDefaultProperties();
         preSolvedPart = computePreSolvedPart();
     }
