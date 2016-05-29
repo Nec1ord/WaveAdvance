@@ -1,17 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:activity=".ui.main.MainActivity">
+    >
 
-    <TextView
-        android:text="Hello World!"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-</RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay"
+            >
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                android:theme="@style/MyToolbarTheme"
+                app:layout_scrollFlags="scroll"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/view_height_small"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:id="@+id/tv_x"
+                    style="@style/AppTheme.MainTextView"
+                    tools:text="X = 12321.213231"
+                    />
+
+                <TextView
+                    android:id="@+id/tv_y"
+                    style="@style/AppTheme.MainTextView"
+                    tools:text="Y = 12321.213231"
+                    />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_result"
+                style="@style/AppTheme.MainTextView"
+                android:layout_height="@dimen/view_height_small"
+                />
+
+        </android.support.design.widget.AppBarLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/view_height_big"
+            android:background="@color/purple"
+            />
+
+        <com.nikolaykul.waveadvance.view.TouchableImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/black"
+            app:dot_color="@color/colorPrimary"
+            app:dot_radius="20"
+            />
+
+    </LinearLayout>
+
+</layout>

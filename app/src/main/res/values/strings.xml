@@ -1,3 +1,4 @@
 <resources>
-
+    <string name="activity_main_title">Wave advance</string>
+    <string name="message_loading">Загрузка…</string>
 </resources>
