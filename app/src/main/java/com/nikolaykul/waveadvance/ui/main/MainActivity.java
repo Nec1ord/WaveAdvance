@@ -63,7 +63,7 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         final float x = dot.getX() / width * 100;
         final float y = dot.getY() / height * 100;
         displayCoordinates(dot.getX(), dot.getY());
-        mPresenter.computeNewCoordinate(Pair.create(x, y));
+        mPresenter.computeNewCoordinate(x, y);
     }
 
     @Override protected void onDestroy() {

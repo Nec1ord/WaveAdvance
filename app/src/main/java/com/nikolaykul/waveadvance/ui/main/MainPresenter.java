@@ -31,11 +31,11 @@ public class MainPresenter extends Presenter<MainMvpView> {
         Timber.i("MainPresenter was destroyed.");
     }
 
-    public void computeNewCoordinate(Pair<Float, Float> coordinate) {
+    public void computeNewCoordinate(float x, float y) {
         final Observable<Double> obsX =
-                Observable.defer(() -> Observable.just(functionX(coordinate)));
+                Observable.defer(() -> Observable.just(functionX(x, y)));
         final Observable<Double> obsY =
-                Observable.defer(() -> Observable.just(functionY(coordinate)));
+                Observable.defer(() -> Observable.just(functionY(x, y)));
         Observable.combineLatest(obsX, obsY, Pair::new)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -44,12 +44,12 @@ public class MainPresenter extends Presenter<MainMvpView> {
                 .subscribe(getMvpView()::showNewCoordinate);
     }
 
-    private double functionX(Pair<Float, Float> pair) {
-        return mManager.u(pair.first, pair.second);
+    private double functionX(float x, float y) {
+        return mManager.u(x, y);
     }
 
-    private double functionY(Pair<Float, Float> pair) {
-        return mManager.v(pair.first, pair.second);
+    private double functionY(float x, float y) {
+        return mManager.v(x, y);
     }
 
 }
