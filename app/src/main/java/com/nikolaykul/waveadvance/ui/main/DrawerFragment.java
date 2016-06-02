@@ -1,7 +1,11 @@
 package com.nikolaykul.waveadvance.ui.main;
 
-/**
- * Created by Nikolay on 29.05.2016.
- */
-public class DrawerFragment {
+import com.nikolaykul.waveadvance.di.component.ActivityComponent;
+import com.nikolaykul.waveadvance.ui.base.BaseFragment;
+
+public class DrawerFragment extends BaseFragment {
+
+    @Override protected void injectSelf(ActivityComponent component) {
+        component.inject(this);
+    }
 }
