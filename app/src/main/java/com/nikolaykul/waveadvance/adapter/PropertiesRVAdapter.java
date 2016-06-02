@@ -62,6 +62,7 @@ public class PropertiesRVAdapter extends
                     if (null == s || 0 == s.length()) return;
                     final double value = Double.parseDouble(s.toString());
                     item.setValue(value);
+                    item.notifyValueChanged();
                 }
             });
         }

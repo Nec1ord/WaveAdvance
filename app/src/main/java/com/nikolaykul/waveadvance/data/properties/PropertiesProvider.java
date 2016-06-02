@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class PropertiesProvider {
+public class PropertiesProvider implements OnPropertyChangedCallback {
     private Property x0;
     private Property y0;
     private Property omega;
@@ -25,6 +25,10 @@ public class PropertiesProvider {
 
     @Inject public PropertiesProvider(@AppContext Context context) {
         initDefaultProperties(context);
+    }
+
+    @Override public void propertyChanged() {
+        recalculateValues();
     }
 
     public List<Property> getAllProperties() {
@@ -83,12 +87,22 @@ public class PropertiesProvider {
         omega = new Property(context.getString(R.string.omega), 12.2);
         mu = new Property(context.getString(R.string.mu), 6.2);
         lambda = new Property(context.getString(R.string.lambda), 13.21);
-        gamma = new Property(context.getString(R.string.gamma), (3 * lambda.getValue() + 2 * mu.getValue()) * 0.42);
         kappa = new Property(context.getString(R.string.kappa), 23.2);
-        k1 = new Property(context.getString(R.string.k1), omega.getValue() / kappa.getValue());
+
+        // these must be calculated
+        gamma = new Property(context.getString(R.string.gamma), Double.NaN, this);
+        k1 = new Property(context.getString(R.string.k1), Double.NaN, this);
+        kappa1 = new Property(context.getString(R.string.kappa1), Double.NaN, this);
+        recalculateValues();
+    }
+
+    private void recalculateValues() {
+        gamma.setValue((3 * lambda.getValue() + 2 * mu.getValue()) * 0.42);
+        k1.setValue(omega.getValue() / kappa.getValue());
         final double p = 0.21;
         final double k = p * (omega.getValue() * omega.getValue());
-        kappa1 = new Property(context.getString(R.string.kappa1), k / (lambda.getValue() + 2 * mu.getValue()));
+        kappa1.setValue(k / (lambda.getValue() + 2 * mu.getValue()));
+
     }
 
 }
