@@ -1,7 +1,12 @@
 package com.nikolaykul.waveadvance.data;
 
+import com.nikolaykul.waveadvance.item.PropertyItem;
+
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.util.FastMath;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -23,6 +28,20 @@ public class MathManager {
     @Inject public MathManager() {
         initDefaultProperties();
         preSolvedPart = computePreSolvedPart();
+    }
+
+    public List<PropertyItem> getProperties() {
+        ArrayList<PropertyItem> res = new ArrayList<>();
+        res.add(new PropertyItem("x0", x0));
+        res.add(new PropertyItem("y0", y0));
+        res.add(new PropertyItem("omega", omega));
+        res.add(new PropertyItem("mu", mu));
+        res.add(new PropertyItem("lambda", lambda));
+        res.add(new PropertyItem("gamma", gamma));
+        res.add(new PropertyItem("kappa", kappa));
+        res.add(new PropertyItem("kappa1", kappa1));
+        res.add(new PropertyItem("k1", k1));
+        return res;
     }
 
     public double u(double x, double y) {

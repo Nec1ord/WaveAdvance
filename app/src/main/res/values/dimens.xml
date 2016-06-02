@@ -7,4 +7,13 @@
     <dimen name="view_height_small">50dp</dimen>
     <dimen name="view_height_big">180dp</dimen>
 
+    <!-- NavDrawer -->
+    <dimen name="drawer_header_height">160dp</dimen>
+
+    <!-- Text -->
+    <dimen name="text_title_size">25sp</dimen>
+
+    <!-- Padding -->
+    <dimen name="padding_normal">16dp</dimen>
+
 </resources>

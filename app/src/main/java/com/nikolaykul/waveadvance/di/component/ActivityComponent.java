@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.nikolaykul.waveadvance.di.module.ActivityModule;
 import com.nikolaykul.waveadvance.di.scope.PerActivity;
+import com.nikolaykul.waveadvance.ui.properties.PropertiesFragment;
 import com.nikolaykul.waveadvance.ui.main.MainActivity;
 
 import dagger.Component;
@@ -14,6 +15,8 @@ import dagger.Component;
 public interface ActivityComponent {
 
     void inject(MainActivity activity);
+
+    void inject(PropertiesFragment fragment);
 
     Activity activity();
 
