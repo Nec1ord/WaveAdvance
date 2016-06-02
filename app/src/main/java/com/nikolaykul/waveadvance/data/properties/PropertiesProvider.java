@@ -38,8 +38,6 @@ public class PropertiesProvider implements OnPropertyChangedCallback {
 
     public List<Property> getAllProperties() {
         ArrayList<Property> res = new ArrayList<>();
-        res.add(x0);
-        res.add(y0);
         res.add(omega);
         res.add(mu);
         res.add(lambda);
