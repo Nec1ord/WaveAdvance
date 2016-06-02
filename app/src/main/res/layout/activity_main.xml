@@ -94,7 +94,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:name="com.nikolaykul.waveadvance.ui.properties.PropertiesFragment"
-                tools:layout="@layout/fragment_drawer"
+                tools:layout="@layout/fragment_properties"
                 />
 
         </android.support.design.widget.NavigationView>
