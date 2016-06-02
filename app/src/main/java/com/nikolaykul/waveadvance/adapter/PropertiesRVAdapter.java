@@ -26,7 +26,7 @@ public class PropertiesRVAdapter extends
     public PropertiesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         final ItemPropertiesBinding binding = DataBindingUtil.inflate(inflater,
-                R.layout.item_properties, parent, false);
+                R.layout.item_property, parent, false);
         return new PropertiesViewHolder(binding.getRoot());
     }
 

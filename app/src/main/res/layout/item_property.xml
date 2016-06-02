@@ -21,14 +21,14 @@
 
         <TextView
             android:id="@+id/tv_name"
-            style="@style/AppTheme.DrawerItem"
+            style="@style/AppTheme.ItemProperty"
             android:text="@{item.name}"
             tools:text="Lambda"
             />
 
         <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/et_value"
-            style="@style/AppTheme.DrawerItem"
+            style="@style/AppTheme.ItemProperty"
             android:inputType="number|numberSigned|numberDecimal"
             android:text='@{item.value + ""}'
             tools:text="123"
