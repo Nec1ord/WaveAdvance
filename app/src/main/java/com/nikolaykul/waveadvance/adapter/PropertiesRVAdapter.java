@@ -9,16 +9,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nikolaykul.waveadvance.R;
+import com.nikolaykul.waveadvance.data.properties.Property;
 import com.nikolaykul.waveadvance.databinding.ItemPropertiesBinding;
-import com.nikolaykul.waveadvance.item.PropertyItem;
 
 import java.util.List;
 
 public class PropertiesRVAdapter extends
         RecyclerView.Adapter<PropertiesRVAdapter.PropertiesViewHolder> {
-    private List<PropertyItem> mItems;
+    private List<Property> mItems;
 
-    public PropertiesRVAdapter(List<PropertyItem> items) {
+    public PropertiesRVAdapter(List<Property> items) {
         mItems = items;
     }
 
@@ -47,7 +47,7 @@ public class PropertiesRVAdapter extends
             mBinding = DataBindingUtil.bind(itemView);
         }
 
-        private void setItem(PropertyItem item) {
+        private void setItem(Property item) {
             mBinding.setItem(item);
             mBinding.etValue.addTextChangedListener(new TextWatcher() {
                 @Override

@@ -13,7 +13,7 @@ import com.nikolaykul.waveadvance.R;
 import com.nikolaykul.waveadvance.adapter.PropertiesRVAdapter;
 import com.nikolaykul.waveadvance.databinding.FragmentPropertiesBinding;
 import com.nikolaykul.waveadvance.di.component.ActivityComponent;
-import com.nikolaykul.waveadvance.item.PropertyItem;
+import com.nikolaykul.waveadvance.data.properties.Property;
 import com.nikolaykul.waveadvance.ui.base.BaseFragment;
 
 import java.util.List;
@@ -46,11 +46,11 @@ public class PropertiesFragment extends BaseFragment implements PropertiesMvpVie
         super.onDestroy();
     }
 
-    @Override public void showProperties(List<PropertyItem> properties) {
+    @Override public void showProperties(List<Property> properties) {
         initRecyclerView(mBinding.recycleView, properties);
     }
 
-    private void initRecyclerView(RecyclerView recyclerView, List<PropertyItem> items) {
+    private void initRecyclerView(RecyclerView recyclerView, List<Property> items) {
         final LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(manager);

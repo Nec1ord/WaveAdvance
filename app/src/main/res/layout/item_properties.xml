@@ -8,7 +8,7 @@
 
         <variable
             name="item"
-            type="com.nikolaykul.waveadvance.item.PropertyItem"
+            type="com.nikolaykul.waveadvance.data.properties.Property"
             />
 
     </data>
