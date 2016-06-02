@@ -54,21 +54,31 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
     }
 
     @Override public void onSingleTap(Dot dot) {
-        displayCoordinates(dot.getX(), dot.getY());
+        Pair<Float, Float> formattedCoordinates = formatCoordinates(dot.getX(), dot.getY());
+        final float x = formattedCoordinates.first;
+        final float y = formattedCoordinates.second;
+        mPresenter.computeNewCoordinate(x, y);
     }
 
     @Override public void onDoubleTap(Dot dot) {
-        int width = mBinding.imageView.getWidth();
-        int height = mBinding.imageView.getHeight();
-        final float x = dot.getX() / width * 100;
-        final float y = dot.getY() / height * 100;
-        displayCoordinates(dot.getX(), dot.getY());
-        mPresenter.computeNewCoordinate(x, y);
+        Pair<Float, Float> formattedCoordinates = formatCoordinates(dot.getX(), dot.getY());
+        final float x = formattedCoordinates.first;
+        final float y = formattedCoordinates.second;
+        displayCoordinates(x, y);
+        mPresenter.updateSourcePosition(x, y);
     }
 
     @Override protected void onDestroy() {
         mPresenter.destroy();
         super.onDestroy();
+    }
+
+    private Pair<Float, Float> formatCoordinates(float x, float y) {
+        int width = mBinding.imageView.getWidth();
+        int height = mBinding.imageView.getHeight();
+        final float newX = x / width * 100;
+        final float newY = y / height * 100;
+        return new Pair<>(newX, newY);
     }
 
     private void displayCoordinates(float x, float y) {

@@ -17,6 +17,10 @@ public class MathManager {
         mProvider = provider;
     }
 
+    public void updateSourcePosition(double x, double y) {
+        mProvider.updateSourcePosition(x, y);
+    }
+
     public double u(double x, double y) {
         return coordinateFunction(x - mProvider.x0(), getLengthFromTheSource(x, y));
     }

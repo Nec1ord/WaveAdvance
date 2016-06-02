@@ -31,6 +31,11 @@ public class PropertiesProvider implements OnPropertyChangedCallback {
         recalculateValues();
     }
 
+    public void updateSourcePosition(double x, double y) {
+        x0.setValue(x);
+        y0.setValue(y);
+    }
+
     public List<Property> getAllProperties() {
         ArrayList<Property> res = new ArrayList<>();
         res.add(x0);

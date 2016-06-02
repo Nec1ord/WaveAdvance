@@ -31,6 +31,10 @@ public class MainPresenter extends Presenter<MainMvpView> {
         Timber.i("MainPresenter was destroyed.");
     }
 
+    public void updateSourcePosition(float x, float y) {
+        mManager.updateSourcePosition(x, y);
+    }
+
     public void computeNewCoordinate(float x, float y) {
         final Observable<Double> obsX =
                 Observable.defer(() -> Observable.just(functionX(x, y)));
