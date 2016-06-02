@@ -12,11 +12,9 @@ import javax.inject.Singleton;
 public class MathManager {
     private static final Complex I_SQRT = Complex.I.sqrt();
     private PropertiesProvider mProvider;
-    private Complex preSolvedPart;
 
     @Inject public MathManager(PropertiesProvider provider) {
         mProvider = provider;
-        preSolvedPart = computePreSolvedPart();
     }
 
     public double u(double x, double y) {
@@ -34,7 +32,7 @@ public class MathManager {
         final Complex arg2 = computeHankel(temp.multiply(r)).multiply(temp);
         final Complex result = arg1.subtract(arg2)
                 .multiply(scale)
-                .multiply(preSolvedPart);
+                .multiply(computePreSolvedPart());
         return result.abs();
     }
 
