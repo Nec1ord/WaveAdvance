@@ -1,6 +1,6 @@
 package com.nikolaykul.waveadvance.ui.properties;
 
-import com.nikolaykul.waveadvance.data.MathManager;
+import com.nikolaykul.waveadvance.data.PropertiesProvider;
 import com.nikolaykul.waveadvance.di.scope.PerActivity;
 import com.nikolaykul.waveadvance.ui.base.Presenter;
 
@@ -8,20 +8,19 @@ import javax.inject.Inject;
 
 @PerActivity
 public class PropertiesPresenter extends Presenter<PropertiesMvpView> {
-    private MathManager mManager;
+    private PropertiesProvider mProvider;
 
-    @Inject PropertiesPresenter(MathManager manager) {
-        mManager = manager;
+    @Inject PropertiesPresenter(PropertiesProvider provider) {
+        mProvider = provider;
     }
 
     @Override public void init() {
-        getMvpView().showProperties(mManager.getProperties());
+        getMvpView().showProperties(mProvider.getAllProperties());
     }
 
     @Override public void destroy() {
 
     }
-
 
 
 }
