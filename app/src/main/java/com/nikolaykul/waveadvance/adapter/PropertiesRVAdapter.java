@@ -4,10 +4,12 @@ import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.nikolaykul.waveadvance.databinding.DrawerItemBinding;
+import com.nikolaykul.waveadvance.R;
+import com.nikolaykul.waveadvance.databinding.ItemPropertiesBinding;
 import com.nikolaykul.waveadvance.item.PropertyItem;
 
 import java.util.List;
@@ -22,26 +24,15 @@ public class PropertiesRVAdapter extends
 
     @Override
     public PropertiesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new PropertiesViewHolder(parent);
+        final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        final ItemPropertiesBinding binding = DataBindingUtil.inflate(inflater,
+                R.layout.item_properties, parent, false);
+        return new PropertiesViewHolder(binding.getRoot());
     }
 
     @Override
     public void onBindViewHolder(PropertiesViewHolder holder, int position) {
-        final PropertyItem item = mItems.get(position);
-        holder.mBinding.setItem(item);
-        holder.mBinding.etValue.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override public void afterTextChanged(Editable s) {
-                final double value = Double.parseDouble(s.toString());
-                item.setValue(value);
-            }
-        });
+        holder.setItem(mItems.get(position));
     }
 
     @Override public int getItemCount() {
@@ -49,11 +40,29 @@ public class PropertiesRVAdapter extends
     }
 
     protected class PropertiesViewHolder extends RecyclerView.ViewHolder {
-        private DrawerItemBinding mBinding;
+        private ItemPropertiesBinding mBinding;
 
         public PropertiesViewHolder(View itemView) {
             super(itemView);
             mBinding = DataBindingUtil.bind(itemView);
+        }
+
+        private void setItem(PropertyItem item) {
+            mBinding.setItem(item);
+            mBinding.etValue.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
+
+                @Override public void afterTextChanged(Editable s) {
+                    final double value = Double.parseDouble(s.toString());
+                    item.setValue(value);
+                }
+            });
         }
 
     }
