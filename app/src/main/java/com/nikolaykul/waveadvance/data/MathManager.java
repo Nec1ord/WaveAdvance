@@ -1,5 +1,7 @@
 package com.nikolaykul.waveadvance.data;
 
+import com.nikolaykul.waveadvance.data.properties.PropertiesProvider;
+
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.util.FastMath;
 

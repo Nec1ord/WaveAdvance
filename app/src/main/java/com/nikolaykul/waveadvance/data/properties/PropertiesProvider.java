@@ -1,4 +1,4 @@
-package com.nikolaykul.waveadvance.data;
+package com.nikolaykul.waveadvance.data.properties;
 
 import android.content.Context;
 

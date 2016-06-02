@@ -1,6 +1,6 @@
 package com.nikolaykul.waveadvance.ui.properties;
 
-import com.nikolaykul.waveadvance.data.PropertiesProvider;
+import com.nikolaykul.waveadvance.data.properties.PropertiesProvider;
 import com.nikolaykul.waveadvance.di.scope.PerActivity;
 import com.nikolaykul.waveadvance.ui.base.Presenter;
 
