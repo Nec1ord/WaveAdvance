@@ -2,4 +2,13 @@
     <string name="activity_main_title">Wave advance</string>
     <string name="properties_title">Свойства среды</string>
     <string name="message_loading">Загрузка…</string>
+    <string name="x0">x0</string>
+    <string name="y0">y0</string>
+    <string name="omega">omega</string>
+    <string name="mu">mu</string>
+    <string name="lambda">lambda</string>
+    <string name="gamma">gamma</string>
+    <string name="kappa">kappa</string>
+    <string name="k1">k1</string>
+    <string name="kappa1">kappa1</string>
 </resources>
