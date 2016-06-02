@@ -11,6 +11,7 @@ import com.nikolaykul.waveadvance.databinding.ActivityMainBinding;
 import com.nikolaykul.waveadvance.di.component.ActivityComponent;
 import com.nikolaykul.waveadvance.event.OnTapListener;
 import com.nikolaykul.waveadvance.ui.base.BaseActivity;
+import com.nikolaykul.waveadvance.view.Dot;
 
 import java.util.Locale;
 
@@ -52,16 +53,16 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         mBinding.tvResult.setText(msg);
     }
 
-    @Override public void onSingleTap(Pair<Float, Float> dot) {
-        displayCoordinates(dot.first, dot.second);
+    @Override public void onSingleTap(Dot dot) {
+        displayCoordinates(dot.getX(), dot.getY());
     }
 
-    @Override public void onDoubleTap(Pair<Float, Float> dot) {
+    @Override public void onDoubleTap(Dot dot) {
         int width = mBinding.imageView.getWidth();
         int height = mBinding.imageView.getHeight();
-        final float x = dot.first / width * 100;
-        final float y = dot.second / height * 100;
-        displayCoordinates(dot.first, dot.second);
+        final float x = dot.getX() / width * 100;
+        final float y = dot.getY() / height * 100;
+        displayCoordinates(dot.getX(), dot.getY());
         mPresenter.computeNewCoordinate(Pair.create(x, y));
     }
 

@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Pair;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.ImageView;
@@ -16,37 +15,33 @@ import android.widget.ImageView;
 import com.nikolaykul.waveadvance.R;
 import com.nikolaykul.waveadvance.event.OnTapListener;
 
-import timber.log.Timber;
-
 public class TouchableImageView extends ImageView {
-    private Pair<Float, Float> mSourceDot;
-    private Pair<Float, Float> mDot;
-    private int mSourceDotRadius;
-    private int mDotRadius;
-    private int mSourceDotColor;
-    private int mDotColor;
+    private Dot mDot;
+    private Dot mSourceDot;
     private Paint mPaint;
     private OnTapListener mListener;
     private GestureDetector.OnGestureListener mGestureListener =
             new GestureDetector.SimpleOnGestureListener() {
                 @Override public boolean onSingleTapUp(MotionEvent event) {
-                    final Pair<Float, Float> newDot = new Pair<>(event.getX(), event.getY());
-                    if (!newDot.equals(mDot)) {
-                        mDot = newDot;
+                    final float x = event.getX();
+                    final float y = event.getY();
+                    if (x != mDot.getX() || y != mDot.getY()) {
+                        mDot.setX(x);
+                        mDot.setY(y);
                         TouchableImageView.this.invalidate();
                         if (null != mListener) mListener.onSingleTap(mDot);
-                        Timber.i("Dot(%f, %f)", mDot.first, mDot.second);
                     }
                     return true;
                 }
 
                 @Override public boolean onDoubleTap(MotionEvent event) {
-                    final Pair<Float, Float> newSourceDot = new Pair<>(event.getX(), event.getY());
-                    if (!newSourceDot.equals(mSourceDot)) {
-                        mSourceDot = newSourceDot;
+                    final float x = event.getX();
+                    final float y = event.getY();
+                    if (x != mSourceDot.getX() || y != mSourceDot.getY()) {
+                        mSourceDot.setX(x);
+                        mSourceDot.setY(y);
                         TouchableImageView.this.invalidate();
-                        if (null != mListener) mListener.onDoubleTap(mDot);
-                        Timber.i("SourceDot(%f, %f)", mSourceDot.first, mSourceDot.second);
+                        if (null != mListener) mListener.onDoubleTap(mSourceDot);
                     }
                     return true;
                 }
@@ -91,15 +86,8 @@ public class TouchableImageView extends ImageView {
         if (isInEditMode()) return;
 
         setImageDrawable(getBackground());
-        drawDot(canvas, mDot, mDotRadius, mDotColor, mPaint);
-        drawDot(canvas, mSourceDot, mSourceDotRadius, mSourceDotColor, mPaint);
-    }
-
-    private void drawDot(Canvas canvas, Pair<Float, Float> dot, int dotRadius, int paintColor,
-                         Paint paint) {
-        if (null == dot) return;
-        paint.setColor(paintColor);
-        canvas.drawCircle(dot.first, dot.second, dotRadius, paint);
+        mDot.drawSelf(canvas, mPaint);
+        mSourceDot.drawSelf(canvas, mPaint);
     }
 
     private void init(Context context, AttributeSet attrs) {
@@ -109,18 +97,22 @@ public class TouchableImageView extends ImageView {
 
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
+        mDot = new Dot();
+        mSourceDot = new Dot();
 
         TypedArray ta = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.TouchableImageView, 0, 0);
         try {
-            mSourceDotRadius = ta.getInteger(R.styleable.TouchableImageView_source_dot_radius,
-                    25);
-            mDotRadius = ta.getInteger(R.styleable.TouchableImageView_dot_radius,
-                    20);
-            mSourceDotColor = ta.getColor(R.styleable.TouchableImageView_source_dot_color,
-                    ContextCompat.getColor(context, R.color.purple));
-            mDotColor = ta.getColor(R.styleable.TouchableImageView_dot_color,
+            int dotRadius = ta.getInteger(R.styleable.TouchableImageView_dot_radius, 20);
+            int dotColor = ta.getColor(R.styleable.TouchableImageView_dot_color,
                     ContextCompat.getColor(context, R.color.colorAccent));
+            int sourceRadius = ta.getInteger(R.styleable.TouchableImageView_source_dot_radius, 25);
+            int sourceColor = ta.getColor(R.styleable.TouchableImageView_source_dot_color,
+                    ContextCompat.getColor(context, R.color.purple));
+            mDot.setColor(dotColor);
+            mDot.setRadius(dotRadius);
+            mSourceDot.setColor(sourceColor);
+            mSourceDot.setRadius(sourceRadius);
         } finally {
             ta.recycle();
         }

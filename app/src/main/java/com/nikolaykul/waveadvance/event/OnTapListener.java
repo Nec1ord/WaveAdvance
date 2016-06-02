@@ -1,8 +1,8 @@
 package com.nikolaykul.waveadvance.event;
 
-import android.util.Pair;
+import com.nikolaykul.waveadvance.view.Dot;
 
 public interface OnTapListener {
-    void onSingleTap(Pair<Float, Float> dot);
-    void onDoubleTap(Pair<Float, Float> dot);
+    void onSingleTap(Dot dot);
+    void onDoubleTap(Dot dot);
 }
