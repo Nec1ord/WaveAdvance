@@ -59,6 +59,7 @@ public class PropertiesRVAdapter extends
                 }
 
                 @Override public void afterTextChanged(Editable s) {
+                    if (null == s || 0 == s.length()) return;
                     final double value = Double.parseDouble(s.toString());
                     item.setValue(value);
                 }
