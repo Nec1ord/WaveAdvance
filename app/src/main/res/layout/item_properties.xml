@@ -29,6 +29,7 @@
         <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/et_value"
             style="@style/AppTheme.DrawerItem"
+            android:inputType="number|numberSigned|numberDecimal"
             android:text='@{item.value + ""}'
             tools:text="123"
             />
