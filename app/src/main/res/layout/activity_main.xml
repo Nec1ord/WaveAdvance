@@ -93,7 +93,7 @@
                 android:id="@+id/drawerFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:name="com.nikolaykul.waveadvance.ui.main.DrawerFragment"
+                android:name="com.nikolaykul.waveadvance.ui.properties.PropertiesFragment"
                 tools:layout="@layout/fragment_drawer"
                 />
 
