@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 import com.nikolaykul.waveadvance.R;
 import com.nikolaykul.waveadvance.data.properties.Property;
-import com.nikolaykul.waveadvance.databinding.ItemPropertiesBinding;
+import com.nikolaykul.waveadvance.databinding.ItemPropertyBinding;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class PropertiesRVAdapter extends
     @Override
     public PropertiesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        final ItemPropertiesBinding binding = DataBindingUtil.inflate(inflater,
+        final ItemPropertyBinding binding = DataBindingUtil.inflate(inflater,
                 R.layout.item_property, parent, false);
         return new PropertiesViewHolder(binding.getRoot());
     }
@@ -40,7 +40,7 @@ public class PropertiesRVAdapter extends
     }
 
     protected class PropertiesViewHolder extends RecyclerView.ViewHolder {
-        private ItemPropertiesBinding mBinding;
+        private ItemPropertyBinding mBinding;
 
         public PropertiesViewHolder(View itemView) {
             super(itemView);
