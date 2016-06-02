@@ -3,11 +3,16 @@ package com.nikolaykul.waveadvance.data;
 import android.content.Context;
 
 import com.nikolaykul.waveadvance.R;
+import com.nikolaykul.waveadvance.di.scope.AppContext;
 import com.nikolaykul.waveadvance.item.PropertyItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class PropertiesProvider {
     private PropertyItem x0;
     private PropertyItem y0;
@@ -19,7 +24,7 @@ public class PropertiesProvider {
     private PropertyItem kappa1;
     private PropertyItem k1;
 
-    public PropertiesProvider(Context context) {
+    @Inject public PropertiesProvider(@AppContext Context context) {
         initDefaultProperties(context);
     }
 
@@ -45,7 +50,7 @@ public class PropertiesProvider {
         return k1.getValue();
     }
 
-    public double kapp1() {
+    public double kappa1() {
         return kappa1.getValue();
     }
 
