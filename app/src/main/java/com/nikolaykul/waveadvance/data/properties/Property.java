@@ -3,13 +3,13 @@ package com.nikolaykul.waveadvance.data.properties;
 public class Property {
     private String mName;
     private double mValue;
-    private OnPropertyChangedCallback mCallback;
+    private PropertyChangedCallback mCallback;
 
     public Property(String name, double value) {
         this(name, value, null);
     }
 
-    public Property(String name, double value, OnPropertyChangedCallback callback) {
+    public Property(String name, double value, PropertyChangedCallback callback) {
         mName = name;
         mValue = value;
         mCallback = callback;

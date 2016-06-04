@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class PropertiesProvider implements OnPropertyChangedCallback {
+public class PropertiesProvider implements PropertyChangedCallback {
     private Property x0;
     private Property y0;
     private Property omega;
