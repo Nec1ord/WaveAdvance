@@ -15,6 +15,10 @@ public class Property {
         mCallback = callback;
     }
 
+    @Override public String toString() {
+        return String.format(Locale.getDefault(), "Property(%s, %f)\n", mName, mValue);
+    }
+
     public String getName() {
         return mName;
     }

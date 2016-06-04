@@ -106,6 +106,12 @@ public class PropertiesProvider implements PropertyChangedCallback {
         final double k = p * (omega.getValue() * omega.getValue());
         kappa1.setValue(k / (lambda.getValue() + 2 * mu.getValue()));
 
+        // for debug
+        printAll();
+    }
+
+    private void printAll() {
+        Timber.d("" + omega + mu + lambda + kappa + gamma + k1 + kappa1);
     }
 
 }
