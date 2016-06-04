@@ -54,6 +54,7 @@ public class PropertiesFragment extends BaseFragment implements PropertiesMvpVie
         final LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(manager);
+        recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(new PropertiesRVAdapter(items));
     }
 

@@ -49,6 +49,7 @@ public class PropertiesRVAdapter extends
 
         private void setItem(Property item) {
             mBinding.setItem(item);
+            mBinding.executePendingBindings();
             mBinding.etValue.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
