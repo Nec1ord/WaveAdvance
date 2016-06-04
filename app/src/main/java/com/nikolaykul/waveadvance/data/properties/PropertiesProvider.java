@@ -11,6 +11,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import timber.log.Timber;
+
 @Singleton
 public class PropertiesProvider implements PropertyChangedCallback {
     private Property x0;
@@ -87,15 +89,15 @@ public class PropertiesProvider implements PropertyChangedCallback {
     private void initDefaultProperties(Context context) {
         x0 = new Property(context.getString(R.string.x0), 20.11);
         y0 = new Property(context.getString(R.string.y0), 20.43);
-        omega = new Property(context.getString(R.string.omega), 12.2);
-        mu = new Property(context.getString(R.string.mu), 6.2);
-        lambda = new Property(context.getString(R.string.lambda), 13.21);
-        kappa = new Property(context.getString(R.string.kappa), 23.2);
+        omega = new Property(context.getString(R.string.omega), 12.2, this);
+        mu = new Property(context.getString(R.string.mu), 6.2, this);
+        lambda = new Property(context.getString(R.string.lambda), 13.21, this);
+        kappa = new Property(context.getString(R.string.kappa), 23.2, this);
 
         // these must be calculated
-        gamma = new Property(context.getString(R.string.gamma), Double.NaN, this);
-        k1 = new Property(context.getString(R.string.k1), Double.NaN, this);
-        kappa1 = new Property(context.getString(R.string.kappa1), Double.NaN, this);
+        gamma = new Property(context.getString(R.string.gamma), Double.NaN);
+        k1 = new Property(context.getString(R.string.k1), Double.NaN);
+        kappa1 = new Property(context.getString(R.string.kappa1), Double.NaN);
         recalculateValues();
     }
 
@@ -105,6 +107,11 @@ public class PropertiesProvider implements PropertyChangedCallback {
         final double p = 0.21;
         final double k = p * (omega.getValue() * omega.getValue());
         kappa1.setValue(k / (lambda.getValue() + 2 * mu.getValue()));
+
+        // notify
+        gamma.notifyChange();
+        k1.notifyChange();
+        kappa1.notifyChange();
 
         // for debug
         printAll();

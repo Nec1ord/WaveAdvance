@@ -1,6 +1,11 @@
 package com.nikolaykul.waveadvance.data.properties;
 
-public class Property {
+import android.databinding.BaseObservable;
+import android.databinding.Bindable;
+
+import java.util.Locale;
+
+public class Property extends BaseObservable {
     private String mName;
     private double mValue;
     private PropertyChangedCallback mCallback;
@@ -27,12 +32,16 @@ public class Property {
         mName = name;
     }
 
+    @Bindable
     public double getValue() {
         return mValue;
     }
 
     public void setValue(double value) {
-        mValue = value;
+        if (value != mValue) {
+            mValue = value;
+            notifyValueChanged();
+        }
     }
 
     public void notifyValueChanged() {
