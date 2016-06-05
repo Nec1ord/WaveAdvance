@@ -37,7 +37,7 @@ public class MainPresenter extends Presenter<MainMvpView> {
     }
 
     public void keepComputingNewCoordinates(float x, float y, long period, double tDelta) {
-        mSubscriptions.clear();
+        stopUpdating();
         final Subscription subscription = mManager.updateCoordsByTime(x, y, period, tDelta)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -46,12 +46,16 @@ public class MainPresenter extends Presenter<MainMvpView> {
     }
 
     public void computeNewCoordinate(float x, float y) {
-        mSubscriptions.clear();
+        stopUpdating();
         final Subscription subscription = mManager.updateCoords(x, y)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(getMvpView()::showNewCoordinate);
         mSubscriptions.add(subscription);
+    }
+
+    public void stopUpdating() {
+        mSubscriptions.clear();
     }
 
 }

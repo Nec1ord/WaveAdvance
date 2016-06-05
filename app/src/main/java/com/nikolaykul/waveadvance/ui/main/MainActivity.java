@@ -93,6 +93,15 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
 
     private void initToolbar(Toolbar toolbar) {
         toolbar.setTitle(R.string.activity_main_title);
+        toolbar.inflateMenu(R.menu.menu_main);
+        toolbar.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.action_stop:
+                    mPresenter.stopUpdating();
+                    break;
+            }
+            return true;
+        });
     }
 
     private void setListeners() {
