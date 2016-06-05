@@ -7,7 +7,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.View;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.nikolaykul.waveadvance.R;
 import com.nikolaykul.waveadvance.databinding.ActivityMainBinding;
 import com.nikolaykul.waveadvance.di.component.ActivityComponent;
@@ -23,30 +22,17 @@ import javax.inject.Inject;
 public class MainActivity extends BaseActivity implements MainMvpView, OnTapListener {
     @Inject MainPresenter mPresenter;
     private ActivityMainBinding mBinding;
-    private MaterialDialog mStub;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         setListeners();
         initToolbar(mBinding.toolbar);
-        mStub = new MaterialDialog.Builder(this)
-                .content(R.string.message_loading)
-                .cancelable(false)
-                .build();
         mPresenter.initWithView(this);
     }
 
     @Override protected void injectSelf(ActivityComponent component) {
         component.inject(this);
-    }
-
-    @Override public void showLoading() {
-        mStub.show();
-    }
-
-    @Override public void hideLoading() {
-        mStub.hide();
     }
 
     @Override public void showNewCoordinate(Pair<Double, Double> coordinate) {

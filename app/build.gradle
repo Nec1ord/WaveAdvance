@@ -83,12 +83,10 @@ dependencies {
     // App
     compile "com.android.support:appcompat-v7:$APPCOMPAT_VERSION"
     compile "com.android.support:design:$APPCOMPAT_VERSION"
-    compile 'com.annimon:stream:1.0.9'
     compile 'com.jakewharton.timber:timber:3.1.0'
     compile 'org.apache.commons:commons-math3:3.6.1'
 
     // Material
-    compile 'com.afollestad.material-dialogs:core:0.8.5.9@aar'
     compile 'com.rengwuxian.materialedittext:library:2.1.4'
 
     // Rx
