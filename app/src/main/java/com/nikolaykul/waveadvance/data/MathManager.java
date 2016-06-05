@@ -130,9 +130,11 @@ public class MathManager {
     }
 
     private void clearTimer() {
-        mTimer.purge();
-        mTimer.cancel();
-        mTimer = null;
+        if (null != mTimer) {
+            mTimer.purge();
+            mTimer.cancel();
+            mTimer = null;
+        }
     }
 
 }
