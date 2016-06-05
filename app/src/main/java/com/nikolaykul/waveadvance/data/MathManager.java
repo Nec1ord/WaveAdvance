@@ -68,11 +68,22 @@ public class MathManager {
         });
     }
 
-    public double u(double x, double y) {
+    public Observable<Pair<Double, Double>> updateCoords(double x, double y) {
+        return Observable.create((Observable.OnSubscribe<Pair<Double, Double>>) subscriber -> {
+            final double xNew = u(x, y);
+            final double yNew = v(x, y);
+            if (!subscriber.isUnsubscribed()) {
+                subscriber.onNext(new Pair<>(xNew, yNew));
+                subscriber.onCompleted();
+            }
+        });
+    }
+
+    private double u(double x, double y) {
         return coordinateFunction(x - mProvider.x0(), getLengthFromTheSource(x, y));
     }
 
-    public double v(double x, double y) {
+    private double v(double x, double y) {
         return coordinateFunction(y - mProvider.y0(), getLengthFromTheSource(x, y));
     }
 
