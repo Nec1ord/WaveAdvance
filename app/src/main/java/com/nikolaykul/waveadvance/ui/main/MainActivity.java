@@ -86,13 +86,13 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
     }
 
     private void displaySourceCoordinates(float x, float y) {
-        mBinding.tvSourceX.setText(String.format(Locale.getDefault(), "X = %f", x));
-        mBinding.tvSourceY.setText(String.format(Locale.getDefault(), "Y = %f", y));
+        mBinding.tvSourceX.setText(String.format(Locale.getDefault(), "Xo = %f", x));
+        mBinding.tvSourceY.setText(String.format(Locale.getDefault(), "Yo = %f", y));
     }
 
     private void displayCoordinates(float x, float y) {
-        mBinding.tvX.setText(String.format(Locale.getDefault(), "X = %f", x));
-        mBinding.tvY.setText(String.format(Locale.getDefault(), "Y = %f", y));
+        mBinding.tvX.setText(String.format(Locale.getDefault(), "U = %f", x));
+        mBinding.tvY.setText(String.format(Locale.getDefault(), "V = %f", y));
     }
 
     private void initToolbar(Toolbar toolbar) {
