@@ -39,14 +39,14 @@ public class MathManager {
 
             final TimerTask task = new TimerTask() {
                 private double t = 0.0;
-                private double u = 0.0;
-                private double v = 0.0;
+                private Complex u;
+                private Complex v;
 
                 @Override public void run() {
                     update();
-                    final double mult = FastMath.exp(mProvider.omega() * t);
-                    final double xNew = u * mult;
-                    final double yNew = v * mult;
+                    final Complex exp = new Complex(0, -mProvider.omega() * t).exp();
+                    final double xNew = u.multiply(exp).getReal();
+                    final double yNew = v.multiply(exp).getReal();
                     if (!subscriber.isUnsubscribed()) {
                         subscriber.onNext(new Pair<>(xNew, yNew));
                     } else {
@@ -55,7 +55,7 @@ public class MathManager {
                 }
 
                 private void update() {
-                    if (0 == u && 0 == v) {
+                    if (null == u && null == v) {
                         u = u(x, y);
                         v = v(x, y);
                     } else {
@@ -70,8 +70,8 @@ public class MathManager {
 
     public Observable<Pair<Double, Double>> updateCoords(double x, double y) {
         return Observable.create((Observable.OnSubscribe<Pair<Double, Double>>) subscriber -> {
-            final double xNew = u(x, y);
-            final double yNew = v(x, y);
+            final double xNew = u(x, y).getReal();
+            final double yNew = v(x, y).getReal();
             if (!subscriber.isUnsubscribed()) {
                 subscriber.onNext(new Pair<>(xNew, yNew));
                 subscriber.onCompleted();
@@ -79,23 +79,22 @@ public class MathManager {
         });
     }
 
-    private double u(double x, double y) {
+    private Complex u(double x, double y) {
         return coordinateFunction(x - mProvider.x0(), getLengthFromTheSource(x, y));
     }
 
-    private double v(double x, double y) {
+    private Complex v(double x, double y) {
         return coordinateFunction(y - mProvider.y0(), getLengthFromTheSource(x, y));
     }
 
-    private double coordinateFunction(double shift, double r) {
+    private Complex coordinateFunction(double shift, double r) {
         final double scale = shift / r;
         final Complex arg1 = computeHankel(r * mProvider.kappa1()).multiply(mProvider.kappa1());
         final Complex temp = I_SQRT.multiply(mProvider.kappa1());
         final Complex arg2 = computeHankel(temp.multiply(r)).multiply(temp);
-        final Complex result = arg1.subtract(arg2)
+        return arg1.subtract(arg2)
                 .multiply(scale)
                 .multiply(computePreSolvedPart());
-        return result.abs();
     }
 
     private Complex computeHankel(double z) {
