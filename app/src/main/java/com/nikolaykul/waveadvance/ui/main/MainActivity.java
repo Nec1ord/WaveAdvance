@@ -52,8 +52,7 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
     @Override public void showNewCoordinate(Pair<Double, Double> coordinate) {
         final double x = coordinate.first;
         final double y = coordinate.second;
-        final String msg = String.format(Locale.getDefault(), "X = %f, Y = %f", x, y);
-        mBinding.tvResult.setText(msg);
+        displayCoordinates((float) x, (float) y);
         mBinding.drawableImageView.addPoint(new Pair<>((float) x, (float) y));
     }
 
@@ -69,7 +68,7 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         Pair<Float, Float> formattedCoordinates = formatCoordinates(dot.getX(), dot.getY());
         final float x = formattedCoordinates.first;
         final float y = formattedCoordinates.second;
-        displayCoordinates(x, y);
+        displaySourceCoordinates(x, y);
         mPresenter.updateSourcePosition(x, y);
     }
 
@@ -84,6 +83,11 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         final float newX = x / width * 100;
         final float newY = y / height * 100;
         return new Pair<>(newX, newY);
+    }
+
+    private void displaySourceCoordinates(float x, float y) {
+        mBinding.tvSourceX.setText(String.format(Locale.getDefault(), "X = %f", x));
+        mBinding.tvSourceY.setText(String.format(Locale.getDefault(), "Y = %f", y));
     }
 
     private void displayCoordinates(float x, float y) {
