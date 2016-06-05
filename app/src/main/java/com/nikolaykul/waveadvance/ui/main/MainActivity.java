@@ -54,6 +54,7 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         final double y = coordinate.second;
         final String msg = String.format(Locale.getDefault(), "X = %f, Y = %f", x, y);
         mBinding.tvResult.setText(msg);
+        mBinding.drawableImageView.addPoint(new Pair<>((float) x, (float) y));
     }
 
     @Override public void onSingleTap(Dot dot) {
@@ -61,6 +62,7 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         final float x = formattedCoordinates.first;
         final float y = formattedCoordinates.second;
         mPresenter.keepComputingNewCoordinates(x, y, 1000, 0.05);
+        mBinding.drawableImageView.clearPoints();
     }
 
     @Override public void onDoubleTap(Dot dot) {
