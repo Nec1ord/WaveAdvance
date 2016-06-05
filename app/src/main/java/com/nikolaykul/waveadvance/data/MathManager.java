@@ -49,6 +49,8 @@ public class MathManager {
                     final double yNew = v * mult;
                     if (!subscriber.isUnsubscribed()) {
                         subscriber.onNext(new Pair<>(xNew, yNew));
+                    } else {
+                        this.cancel();
                     }
                 }
 
