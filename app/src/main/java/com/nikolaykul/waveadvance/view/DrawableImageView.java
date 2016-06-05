@@ -2,6 +2,7 @@ package com.nikolaykul.waveadvance.view;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -11,12 +12,18 @@ import android.util.AttributeSet;
 import android.util.Pair;
 import android.widget.ImageView;
 
+import com.nikolaykul.waveadvance.R;
+
 import java.util.ArrayList;
 
 public class DrawableImageView extends ImageView {
     private static final float RULER_SIZE = 10f;
+    private static final float DEFAULT_RULER_TEXT_SIZE = 22f;
+    private static final float DEFAULT_LINE_SIZE = 5f;
+    private static final int DEFAULT_RULER_COLOR = Color.WHITE;
+    private static final int DEFAULT_LINE_COLOR = Color.RED;
     private ArrayList<Dot> mDots;
-    private Paint mDotPaint;
+    private Paint mLinePaint;
     private Paint mRulerPaint;
     private Rect mTextBounds;
 
@@ -70,7 +77,7 @@ public class DrawableImageView extends ImageView {
             final float y1 = mDots.get(i).getY() + dy;
             final float x2 = mDots.get(i + 1).getX() + dx;
             final float y2 = mDots.get(i + 1).getY() + dy;
-            canvas.drawLine(x1, y1, x2, y2, mDotPaint);
+            canvas.drawLine(x1, y1, x2, y2, mLinePaint);
             drawRuler(canvas, x1, y1);
         }
     }
@@ -106,17 +113,36 @@ public class DrawableImageView extends ImageView {
         setFocusableInTouchMode(false);
 
         mDots = new ArrayList<>();
+        mTextBounds = new Rect();
 
-        mDotPaint = new Paint();
-        mDotPaint.setAntiAlias(true);
-        mDotPaint.setColor(Color.RED);
+        mLinePaint = new Paint();
+        mLinePaint.setAntiAlias(true);
+        mLinePaint.setColor(DEFAULT_LINE_COLOR);
+        mLinePaint.setStrokeWidth(5f);
 
         mRulerPaint = new Paint();
         mRulerPaint.setAntiAlias(true);
-        mRulerPaint.setColor(Color.WHITE);
-        mRulerPaint.setTextSize(22f);
+        mRulerPaint.setColor(DEFAULT_RULER_COLOR);
+        mRulerPaint.setTextSize(DEFAULT_RULER_TEXT_SIZE);
 
-        mTextBounds = new Rect();
+        TypedArray ta = context.getTheme().obtainStyledAttributes(attrs,
+                R.styleable.DrawableImageView, 0, 0);
+        try {
+            float rulerTextSize = ta.getFloat(R.styleable.DrawableImageView_ruler_text_size,
+                    DEFAULT_RULER_TEXT_SIZE);
+            int rulerColor = ta.getColor(R.styleable.DrawableImageView_ruler_color,
+                    DEFAULT_RULER_COLOR);
+            float lineSize = ta.getFloat(R.styleable.DrawableImageView_line_size,
+                    DEFAULT_LINE_SIZE);
+            int lineColor = ta.getInteger(R.styleable.DrawableImageView_line_color,
+                    DEFAULT_LINE_COLOR);
+            mRulerPaint.setTextSize(rulerTextSize);
+            mRulerPaint.setColor(rulerColor);
+            mLinePaint.setStrokeWidth(lineSize);
+            mLinePaint.setColor(lineColor);
+        } finally {
+            ta.recycle();
+        }
     }
 
 
