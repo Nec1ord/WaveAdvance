@@ -2,6 +2,8 @@ package com.nikolaykul.waveadvance.di.component;
 
 import android.content.Context;
 
+import com.nikolaykul.waveadvance.data.MathManager;
+import com.nikolaykul.waveadvance.data.properties.PropertiesProvider;
 import com.nikolaykul.waveadvance.di.module.ApplicationModule;
 import com.nikolaykul.waveadvance.di.scope.AppContext;
 
@@ -13,4 +15,6 @@ import dagger.Component;
 @Component(modules = ApplicationModule.class)
 public interface ApplicationComponent {
     @AppContext Context context();
+    MathManager mathManager();
+    PropertiesProvider propertiesProvider();
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TouchableImageView">
+        <attr name="dot_radius" format="integer"/>
+        <attr name="dot_color" format="color"/>
+        <attr name="source_dot_radius" format="integer"/>
+        <attr name="source_dot_color" format="color"/>
+    </declare-styleable>
+    <declare-styleable name="DrawableImageView">
+        <attr name="line_color" format="float"/>
+        <attr name="line_size" format="float"/>
+        <attr name="ruler_color" format="float"/>
+        <attr name="ruler_text_size" format="float"/>
+    </declare-styleable>
+</resources>
