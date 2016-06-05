@@ -16,8 +16,9 @@ import java.util.ArrayList;
 public class DrawableImageView extends ImageView {
     private static final float RULER_SIZE = 10f;
     private ArrayList<Dot> mDots;
-    private Paint mPaint;
-    private Rect textBounds;
+    private Paint mDotPaint;
+    private Paint mRulerPaint;
+    private Rect mTextBounds;
 
     public DrawableImageView(Context context) {
         super(context);
@@ -69,7 +70,7 @@ public class DrawableImageView extends ImageView {
             final float y1 = mDots.get(i).getY() + dy;
             final float x2 = mDots.get(i + 1).getX() + dx;
             final float y2 = mDots.get(i + 1).getY() + dy;
-            canvas.drawLine(x1, y1, x2, y2, mPaint);
+            canvas.drawLine(x1, y1, x2, y2, mDotPaint);
             drawRuler(canvas, x1, y1);
         }
     }
@@ -85,19 +86,19 @@ public class DrawableImageView extends ImageView {
     }
 
     private void drawRuler(Canvas canvas, float x, float y) {
-        canvas.drawLine(x, getHeight(), x, getHeight() - RULER_SIZE, mPaint);
-        canvas.drawLine(0, y, RULER_SIZE, y, mPaint);
+        canvas.drawLine(x, getHeight(), x, getHeight() - RULER_SIZE, mRulerPaint);
+        canvas.drawLine(0, y, RULER_SIZE, y, mRulerPaint);
     }
 
     private void drawRulerWithText(Canvas canvas, float x, float y, String xText, String yText) {
         drawRuler(canvas, x, y);
         final float delta = RULER_SIZE + 10f;
         // x
-        mPaint.getTextBounds(xText, 0, xText.length(), textBounds);
-        canvas.drawText(xText, x - textBounds.centerX(), getHeight() - delta, mPaint);
+        mRulerPaint.getTextBounds(xText, 0, xText.length(), mTextBounds);
+        canvas.drawText(xText, x - mTextBounds.centerX(), getHeight() - delta, mRulerPaint);
         // y
-        mPaint.getTextBounds(yText, 0, yText.length(), textBounds);
-        canvas.drawText(yText, delta, y - textBounds.centerY(), mPaint);
+        mRulerPaint.getTextBounds(yText, 0, yText.length(), mTextBounds);
+        canvas.drawText(yText, delta, y - mTextBounds.centerY(), mRulerPaint);
     }
 
     private void init(Context context, AttributeSet attrs) {
@@ -106,11 +107,16 @@ public class DrawableImageView extends ImageView {
 
         mDots = new ArrayList<>();
 
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        mPaint.setColor(Color.RED);
+        mDotPaint = new Paint();
+        mDotPaint.setAntiAlias(true);
+        mDotPaint.setColor(Color.RED);
 
-        textBounds = new Rect();
+        mRulerPaint = new Paint();
+        mRulerPaint.setAntiAlias(true);
+        mRulerPaint.setColor(Color.WHITE);
+        mRulerPaint.setTextSize(22f);
+
+        mTextBounds = new Rect();
     }
 
 
