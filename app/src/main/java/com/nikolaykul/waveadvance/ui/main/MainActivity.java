@@ -2,8 +2,10 @@ package com.nikolaykul.waveadvance.ui.main;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.Pair;
+import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.nikolaykul.waveadvance.R;
@@ -11,6 +13,7 @@ import com.nikolaykul.waveadvance.databinding.ActivityMainBinding;
 import com.nikolaykul.waveadvance.di.component.ActivityComponent;
 import com.nikolaykul.waveadvance.event.OnTapListener;
 import com.nikolaykul.waveadvance.ui.base.BaseActivity;
+import com.nikolaykul.waveadvance.util.ActivityUtil;
 import com.nikolaykul.waveadvance.view.Dot;
 
 import java.util.Locale;
@@ -25,7 +28,7 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        mBinding.imageView.setOnTapListener(this);
+        setListeners();
         initToolbar(mBinding.toolbar);
         mStub = new MaterialDialog.Builder(this)
                 .content(R.string.message_loading)
@@ -88,6 +91,24 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
 
     private void initToolbar(Toolbar toolbar) {
         toolbar.setTitle(R.string.activity_main_title);
+    }
+
+    private void setListeners() {
+        mBinding.imageView.setOnTapListener(this);
+        mBinding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override public void onDrawerSlide(View drawerView, float slideOffset) {
+                ActivityUtil.hideKeyboard(MainActivity.this);
+            }
+
+            @Override public void onDrawerOpened(View drawerView) {
+            }
+
+            @Override public void onDrawerClosed(View drawerView) {
+            }
+
+            @Override public void onDrawerStateChanged(int newState) {
+            }
+        });
     }
 
 }
