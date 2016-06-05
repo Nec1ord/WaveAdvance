@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
-import timber.log.Timber;
 
 @Singleton
 public class MathManager {
@@ -48,7 +47,6 @@ public class MathManager {
                     final double mult = FastMath.exp(mProvider.omega() * t);
                     final double xNew = u * mult;
                     final double yNew = v * mult;
-                    Timber.d("TimerInfo:\nt=%f,\nmult=%f,\nx=%f,\ny=%f", t, mult, xNew, yNew);
                     if (!subscriber.isUnsubscribed()) {
                         subscriber.onNext(new Pair<>(xNew, yNew));
                     }
