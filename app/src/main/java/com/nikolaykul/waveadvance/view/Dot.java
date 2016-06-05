@@ -18,6 +18,10 @@ public class Dot {
         this(DEFAULT_X, DEFAULT_Y, DEFAULT_RADIUS, DEFAULT_COLOR);
     }
 
+    public Dot(float x, float y) {
+        this(x, y, DEFAULT_RADIUS, DEFAULT_COLOR);
+    }
+
     public Dot(float x, float y, int radius, int color) {
         this.mX = x;
         this.mY = y;

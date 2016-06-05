@@ -62,7 +62,8 @@
 
             </android.support.design.widget.AppBarLayout>
 
-            <ImageView
+            <com.nikolaykul.waveadvance.view.DrawableImageView
+                android:id="@+id/drawable_image_view"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/view_height_big"
                 android:background="@color/purple"
