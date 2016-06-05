@@ -1,17 +1,26 @@
 package com.nikolaykul.waveadvance.data;
 
+import android.util.Pair;
+
 import com.nikolaykul.waveadvance.data.properties.PropertiesProvider;
 
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.util.FastMath;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import rx.Observable;
+import timber.log.Timber;
 
 @Singleton
 public class MathManager {
     private static final Complex I_SQRT = Complex.I.sqrt();
     private PropertiesProvider mProvider;
+    private Timer mTimer;
 
     @Inject public MathManager(PropertiesProvider provider) {
         mProvider = provider;
@@ -19,6 +28,44 @@ public class MathManager {
 
     public void updateSourcePosition(double x, double y) {
         mProvider.updateSourcePosition(x, y);
+    }
+
+    public Observable<Pair<Double, Double>> updateCoordsByTime(double x, double y,
+                                                               long period, double tDelta) {
+        return Observable.create((Observable.OnSubscribe<Pair<Double, Double>>) subscriber -> {
+            clearTimer();
+            if (subscriber.isUnsubscribed()) {
+                return;
+            }
+
+            final TimerTask task = new TimerTask() {
+                private double t = 0.0;
+                private double u = 0.0;
+                private double v = 0.0;
+
+                @Override public void run() {
+                    update();
+                    final double mult = FastMath.exp(mProvider.omega() * t);
+                    final double xNew = u * mult;
+                    final double yNew = v * mult;
+                    Timber.d("TimerInfo:\nt=%f,\nmult=%f,\nx=%f,\ny=%f", t, mult, xNew, yNew);
+                    if (!subscriber.isUnsubscribed()) {
+                        subscriber.onNext(new Pair<>(xNew, yNew));
+                    }
+                }
+
+                private void update() {
+                    if (0 == u && 0 == v) {
+                        u = u(x, y);
+                        v = v(x, y);
+                    } else {
+                        t += tDelta;
+                    }
+                }
+            };
+            mTimer = new Timer("Update coordinates timer");
+            mTimer.schedule(task, 0L, period);
+        });
     }
 
     public double u(double x, double y) {
@@ -69,6 +116,12 @@ public class MathManager {
                 mProvider.kappa1() * mProvider.kappa1(), -(mProvider.k1() * mProvider.k1()))
                 .multiply(temp);
         return numerator.divide(denominator);
+    }
+
+    private void clearTimer() {
+        mTimer.purge();
+        mTimer.cancel();
+        mTimer = null;
     }
 
 }

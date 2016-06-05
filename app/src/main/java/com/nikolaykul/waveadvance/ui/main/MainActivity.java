@@ -60,7 +60,7 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         Pair<Float, Float> formattedCoordinates = formatCoordinates(dot.getX(), dot.getY());
         final float x = formattedCoordinates.first;
         final float y = formattedCoordinates.second;
-        mPresenter.computeNewCoordinate(x, y);
+        mPresenter.keepComputingNewCoordinates(x, y, 1000, 0.05);
     }
 
     @Override public void onDoubleTap(Dot dot) {
