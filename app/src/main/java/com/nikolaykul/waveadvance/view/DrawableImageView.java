@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import com.nikolaykul.waveadvance.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class DrawableImageView extends ImageView {
     private static final float RULER_SIZE = 10f;
@@ -23,8 +24,10 @@ public class DrawableImageView extends ImageView {
     private static final int DEFAULT_RULER_COLOR = Color.WHITE;
     private static final int DEFAULT_LINE_COLOR = Color.RED;
     private ArrayList<Dot> mDots;
+    private ArrayList<Dot> mSortedDots;
     private Paint mLinePaint;
     private Paint mRulerPaint;
+    private Paint mDotPaint;
     private Rect mTextBounds;
 
     public DrawableImageView(Context context) {
@@ -62,14 +65,8 @@ public class DrawableImageView extends ImageView {
         if (isInEditMode() || mDots.isEmpty()) return;
 
         // find dx, dy
-        final Dot lastDot = mDots.get(mDots.size() - 1);
-        final float dx = (getWidth() / 2) - lastDot.getX();
-        final float dy = (getHeight() / 2) - lastDot.getY();
-
-        // draw last Dot's ruler and value
-        drawRulerWithText(canvas,
-                lastDot.getX() + dx, lastDot.getY() + dy,
-                lastDot.getX() + "", lastDot.getY() + "");
+        final float dx = findDx();
+        final float dy = findDy();
 
         // draw all Dots with ruler
         for (int i = 0; i < mDots.size() - 1; i++) {
@@ -80,15 +77,25 @@ public class DrawableImageView extends ImageView {
             canvas.drawLine(x1, y1, x2, y2, mLinePaint);
             drawRuler(canvas, x1, y1);
         }
+
+        // draw last Dot, it's ruler and value
+        final Dot lastDot = mDots.get(mDots.size() - 1);
+        canvas.drawPoint(lastDot.getX() + dx, lastDot.getY() + dy, mDotPaint);
+        drawRulerWithText(canvas,
+                lastDot.getX() + dx, lastDot.getY() + dy,
+                lastDot.getX() + "", lastDot.getY() + "");
     }
 
     public void addPoint(Pair<Float, Float> point) {
-        mDots.add(new Dot(point.first, point.second));
+        final Dot dot = new Dot(point.first, point.second);
+        mDots.add(dot);
+        mSortedDots.add(dot);
         invalidate();
     }
 
     public void clearPoints() {
         mDots.clear();
+        mSortedDots.clear();
         invalidate();
     }
 
@@ -113,17 +120,23 @@ public class DrawableImageView extends ImageView {
         setFocusableInTouchMode(false);
 
         mDots = new ArrayList<>();
+        mSortedDots = new ArrayList<>();
         mTextBounds = new Rect();
 
         mLinePaint = new Paint();
         mLinePaint.setAntiAlias(true);
         mLinePaint.setColor(DEFAULT_LINE_COLOR);
-        mLinePaint.setStrokeWidth(5f);
+        mLinePaint.setStrokeWidth(DEFAULT_LINE_SIZE);
 
         mRulerPaint = new Paint();
         mRulerPaint.setAntiAlias(true);
         mRulerPaint.setColor(DEFAULT_RULER_COLOR);
         mRulerPaint.setTextSize(DEFAULT_RULER_TEXT_SIZE);
+
+        mDotPaint = new Paint();
+        mDotPaint.setAntiAlias(true);
+        mDotPaint.setColor(Color.WHITE);
+        mDotPaint.setStrokeWidth(7f);
 
         TypedArray ta = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.DrawableImageView, 0, 0);
@@ -143,6 +156,34 @@ public class DrawableImageView extends ImageView {
         } finally {
             ta.recycle();
         }
+    }
+
+    private float findDy() {
+        Collections.sort(mSortedDots, (lhs, rhs) -> {
+            if (lhs.getY() > rhs.getY()) {
+                return 1;
+            } else if (lhs.getY() < rhs.getY()) {
+                return -1;
+            }
+            return 0;
+        });
+        float maxDiff = Math.abs(mSortedDots.get(0).getY()) -
+                Math.abs(mSortedDots.get(mSortedDots.size() - 1).getY());
+        return (getHeight() / 2f) - (maxDiff / 2f);
+    }
+
+    private float findDx() {
+        Collections.sort(mSortedDots, (lhs, rhs) -> {
+            if (lhs.getX() > rhs.getX()) {
+                return 1;
+            } else if (lhs.getX() < rhs.getX()) {
+                return -1;
+            }
+            return 0;
+        });
+        float maxDiff = Math.abs(mSortedDots.get(0).getX()) -
+                Math.abs(mSortedDots.get(mSortedDots.size() - 1).getX());
+        return (getWidth() / 2f) - (maxDiff / 2f);
     }
 
 
