@@ -55,6 +55,8 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         final float x = formattedCoordinates.first;
         final float y = formattedCoordinates.second;
         displaySourceCoordinates(x, y);
+        mBinding.drawableImageView.clearPoints();
+        mPresenter.stopUpdating();
         mPresenter.updateSourcePosition(x, y);
     }
 
