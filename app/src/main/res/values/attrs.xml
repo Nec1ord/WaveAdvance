@@ -7,9 +7,11 @@
         <attr name="source_dot_color" format="color"/>
     </declare-styleable>
     <declare-styleable name="DrawableImageView">
-        <attr name="line_color" format="float"/>
-        <attr name="line_size" format="float"/>
-        <attr name="ruler_color" format="float"/>
-        <attr name="ruler_text_size" format="float"/>
+        <attr name="div_line_color" format="float"/>
+        <attr name="div_line_size" format="float"/>
+        <attr name="div_dot_color" format="float"/>
+        <attr name="div_dot_size" format="float"/>
+        <attr name="div_ruler_color" format="float"/>
+        <attr name="div_ruler_text_size" format="float"/>
     </declare-styleable>
 </resources>

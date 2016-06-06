@@ -21,8 +21,10 @@ public class DrawableImageView extends ImageView {
     private static final float RULER_SIZE = 10f;
     private static final float DEFAULT_RULER_TEXT_SIZE = 22f;
     private static final float DEFAULT_LINE_SIZE = 5f;
+    private static final float DEFAULT_DOT_SIZE = 7f;
     private static final int DEFAULT_RULER_COLOR = Color.WHITE;
     private static final int DEFAULT_LINE_COLOR = Color.RED;
+    private static final int DEFAULT_DOT_COLOR = Color.WHITE;
     private ArrayList<Dot> mDots;
     private ArrayList<Dot> mSortedDots;
     private Paint mLinePaint;
@@ -135,24 +137,30 @@ public class DrawableImageView extends ImageView {
 
         mDotPaint = new Paint();
         mDotPaint.setAntiAlias(true);
-        mDotPaint.setColor(Color.WHITE);
-        mDotPaint.setStrokeWidth(7f);
+        mDotPaint.setColor(DEFAULT_DOT_COLOR);
+        mDotPaint.setStrokeWidth(DEFAULT_DOT_SIZE);
 
         TypedArray ta = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.DrawableImageView, 0, 0);
         try {
-            float rulerTextSize = ta.getFloat(R.styleable.DrawableImageView_ruler_text_size,
+            float rulerTextSize = ta.getFloat(R.styleable.DrawableImageView_div_ruler_text_size,
                     DEFAULT_RULER_TEXT_SIZE);
-            int rulerColor = ta.getColor(R.styleable.DrawableImageView_ruler_color,
+            int rulerColor = ta.getColor(R.styleable.DrawableImageView_div_ruler_color,
                     DEFAULT_RULER_COLOR);
-            float lineSize = ta.getFloat(R.styleable.DrawableImageView_line_size,
+            float lineSize = ta.getFloat(R.styleable.DrawableImageView_div_line_size,
                     DEFAULT_LINE_SIZE);
-            int lineColor = ta.getInteger(R.styleable.DrawableImageView_line_color,
+            int lineColor = ta.getInteger(R.styleable.DrawableImageView_div_line_color,
                     DEFAULT_LINE_COLOR);
+            float dotSize = ta.getFloat(R.styleable.DrawableImageView_div_dot_size,
+                    DEFAULT_DOT_SIZE);
+            int dotColor = ta.getColor(R.styleable.DrawableImageView_div_dot_color,
+                    DEFAULT_DOT_COLOR);
             mRulerPaint.setTextSize(rulerTextSize);
             mRulerPaint.setColor(rulerColor);
             mLinePaint.setStrokeWidth(lineSize);
             mLinePaint.setColor(lineColor);
+            mDotPaint.setStrokeWidth(dotSize);
+            mDotPaint.setColor(dotColor);
         } finally {
             ta.recycle();
         }
