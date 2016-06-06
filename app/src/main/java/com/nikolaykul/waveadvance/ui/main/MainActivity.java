@@ -47,7 +47,7 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         final float y = formattedCoordinates.second;
         displayCoordinates(x, y);
         mBinding.drawableImageView.clearPoints();
-        mPresenter.keepComputingNewCoordinates(x, y, 1000, 0.05);
+        mPresenter.keepComputingNewCoordinates(x, y, 100, 100);
     }
 
     @Override public void onDoubleTap(Dot dot) {
