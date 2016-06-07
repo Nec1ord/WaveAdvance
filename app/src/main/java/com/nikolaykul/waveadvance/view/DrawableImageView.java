@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import com.nikolaykul.waveadvance.R;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class DrawableImageView extends ImageView {
     private static final float RULER_SIZE = 10f;
@@ -26,7 +25,9 @@ public class DrawableImageView extends ImageView {
     private static final int DEFAULT_LINE_COLOR = Color.RED;
     private static final int DEFAULT_DOT_COLOR = Color.WHITE;
     private ArrayList<Dot> mDots;
-    private ArrayList<Dot> mSortedDots;
+    private float mDy;
+    private float maxY;
+    private float minY;
     private Paint mLinePaint;
     private Paint mRulerPaint;
     private Paint mDotPaint;
@@ -66,39 +67,44 @@ public class DrawableImageView extends ImageView {
         super.onDraw(canvas);
         if (isInEditMode() || mDots.isEmpty()) return;
 
-        // find dx, dy
-        final float dx = findDx();
-        final float dy = findDy();
+        canvas.translate(0f, mDy);
 
         // draw all Dots with ruler
         for (int i = 0; i < mDots.size() - 1; i++) {
-            final float x1 = mDots.get(i).getX() + dx;
-            final float y1 = mDots.get(i).getY() + dy;
-            final float x2 = mDots.get(i + 1).getX() + dx;
-            final float y2 = mDots.get(i + 1).getY() + dy;
+            final float x1 = mDots.get(i).getX();
+            final float y1 = mDots.get(i).getY();
+            final float x2 = mDots.get(i + 1).getX();
+            final float y2 = mDots.get(i + 1).getY();
             canvas.drawLine(x1, y1, x2, y2, mLinePaint);
             drawRuler(canvas, x1, y1);
         }
 
         // draw last Dot, it's ruler and value
         final Dot lastDot = mDots.get(mDots.size() - 1);
-        canvas.drawPoint(lastDot.getX() + dx, lastDot.getY() + dy, mDotPaint);
+        canvas.drawPoint(lastDot.getX(), lastDot.getY(), mDotPaint);
         drawRulerWithText(canvas,
-                lastDot.getX() + dx, lastDot.getY() + dy,
+                lastDot.getX(), lastDot.getY(),
                 lastDot.getX() + "", lastDot.getY() + "");
     }
 
     public void addPoint(Pair<Float, Float> point) {
         final Dot dot = new Dot(point.first, point.second);
         mDots.add(dot);
-        mSortedDots.add(dot);
+        updateTranslateFactor(dot.getY());
         invalidate();
     }
 
     public void clearPoints() {
         mDots.clear();
-        mSortedDots.clear();
+        clearProperties();
         invalidate();
+    }
+
+    private void updateTranslateFactor(float y) {
+        if (y > maxY) maxY = y;
+        if (y < minY) minY = y;
+        final float maxDiff = Math.abs(maxY) - Math.abs(minY);
+        mDy = (getHeight() / 2f) - (maxDiff / 2f);
     }
 
     private void drawRuler(Canvas canvas, float x, float y) {
@@ -122,7 +128,7 @@ public class DrawableImageView extends ImageView {
         setFocusableInTouchMode(false);
 
         mDots = new ArrayList<>();
-        mSortedDots = new ArrayList<>();
+        clearProperties();
         mTextBounds = new Rect();
 
         mLinePaint = new Paint();
@@ -166,32 +172,10 @@ public class DrawableImageView extends ImageView {
         }
     }
 
-    private float findDy() {
-        Collections.sort(mSortedDots, (lhs, rhs) -> {
-            if (lhs.getY() > rhs.getY()) {
-                return 1;
-            } else if (lhs.getY() < rhs.getY()) {
-                return -1;
-            }
-            return 0;
-        });
-        float maxDiff = Math.abs(mSortedDots.get(0).getY()) -
-                Math.abs(mSortedDots.get(mSortedDots.size() - 1).getY());
-        return (getHeight() / 2f) - (maxDiff / 2f);
-    }
-
-    private float findDx() {
-        Collections.sort(mSortedDots, (lhs, rhs) -> {
-            if (lhs.getX() > rhs.getX()) {
-                return 1;
-            } else if (lhs.getX() < rhs.getX()) {
-                return -1;
-            }
-            return 0;
-        });
-        float maxDiff = Math.abs(mSortedDots.get(0).getX()) -
-                Math.abs(mSortedDots.get(mSortedDots.size() - 1).getX());
-        return (getWidth() / 2f) - (maxDiff / 2f);
+    private void clearProperties() {
+        mDy = 0f;
+        minY = Float.MAX_VALUE;
+        maxY = Float.MIN_VALUE;
     }
 
 
