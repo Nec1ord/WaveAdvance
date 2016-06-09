@@ -81,6 +81,12 @@ public class TouchableImageView extends ImageView {
         mListener = listener;
     }
 
+    public void setSourceDot(float x, float y) {
+        mSourceDot.setX(x);
+        mSourceDot.setY(y);
+        this.invalidate();
+    }
+
     @Override protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (isInEditMode()) return;

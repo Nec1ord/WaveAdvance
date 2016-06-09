@@ -71,17 +71,6 @@ public class MathManager {
         });
     }
 
-    public Observable<Pair<Double, Double>> updateCoords(double x, double y) {
-        return Observable.create((Observable.OnSubscribe<Pair<Double, Double>>) subscriber -> {
-            final double xNew = u(x, y).getReal();
-            final double yNew = v(x, y).getReal();
-            if (!subscriber.isUnsubscribed()) {
-                subscriber.onNext(new Pair<>(xNew, yNew));
-                subscriber.onCompleted();
-            }
-        });
-    }
-
     private Complex u(double x, double y) {
         return coordinateFunction(x - mProvider.x0(), getLengthFromTheSource(x, y));
     }
