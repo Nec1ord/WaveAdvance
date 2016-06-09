@@ -6,7 +6,6 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Pair;
@@ -17,11 +16,8 @@ import com.nikolaykul.waveadvance.R;
 import java.util.ArrayList;
 
 public class DrawableImageView extends ImageView {
-    private static final float RULER_SIZE = 10f;
-    private static final float DEFAULT_RULER_TEXT_SIZE = 22f;
     private static final float DEFAULT_LINE_SIZE = 5f;
     private static final float DEFAULT_DOT_SIZE = 7f;
-    private static final int DEFAULT_RULER_COLOR = Color.WHITE;
     private static final int DEFAULT_LINE_COLOR = Color.RED;
     private static final int DEFAULT_DOT_COLOR = Color.WHITE;
     private ArrayList<Dot> mDots;
@@ -30,9 +26,7 @@ public class DrawableImageView extends ImageView {
     private float maxY;
     private float minY;
     private Paint mLinePaint;
-    private Paint mRulerPaint;
     private Paint mDotPaint;
-    private Rect mTextBounds;
 
     public DrawableImageView(Context context) {
         super(context);
@@ -70,22 +64,18 @@ public class DrawableImageView extends ImageView {
 
         canvas.translate(mDx, mDy);
 
-        // draw all Dots with ruler
+        // draw all Dots
         for (int i = 0; i < mDots.size() - 1; i++) {
             final float x1 = mDots.get(i).getX();
             final float y1 = mDots.get(i).getY();
             final float x2 = mDots.get(i + 1).getX();
             final float y2 = mDots.get(i + 1).getY();
             canvas.drawLine(x1, y1, x2, y2, mLinePaint);
-            drawRuler(canvas, x1, y1);
         }
 
-        // draw last Dot, it's ruler and value
+        // draw last Dot
         final Dot lastDot = mDots.get(mDots.size() - 1);
         canvas.drawPoint(lastDot.getX(), lastDot.getY(), mDotPaint);
-        drawRulerWithText(canvas,
-                lastDot.getX(), lastDot.getY(),
-                lastDot.getX() + "", lastDot.getY() + "");
     }
 
     public void addPoint(Pair<Float, Float> point) {
@@ -112,40 +102,17 @@ public class DrawableImageView extends ImageView {
     private void updateAbscissa(float currentX, float previousX) {
         mDx -= Math.abs(currentX - previousX);
     }
-
-    private void drawRuler(Canvas canvas, float x, float y) {
-        canvas.drawLine(x, getHeight(), x, getHeight() - RULER_SIZE, mRulerPaint);
-        canvas.drawLine(0, y, RULER_SIZE, y, mRulerPaint);
-    }
-
-    private void drawRulerWithText(Canvas canvas, float x, float y, String xText, String yText) {
-        drawRuler(canvas, x, y);
-        final float delta = RULER_SIZE + 10f;
-        // x
-        mRulerPaint.getTextBounds(xText, 0, xText.length(), mTextBounds);
-        canvas.drawText(xText, x - mTextBounds.centerX(), getHeight() - delta, mRulerPaint);
-        // y
-        mRulerPaint.getTextBounds(yText, 0, yText.length(), mTextBounds);
-        canvas.drawText(yText, delta, y - mTextBounds.centerY(), mRulerPaint);
-    }
-
     private void init(Context context, AttributeSet attrs) {
         setFocusable(false);
         setFocusableInTouchMode(false);
 
         mDots = new ArrayList<>();
         clearProperties();
-        mTextBounds = new Rect();
 
         mLinePaint = new Paint();
         mLinePaint.setAntiAlias(true);
         mLinePaint.setColor(DEFAULT_LINE_COLOR);
         mLinePaint.setStrokeWidth(DEFAULT_LINE_SIZE);
-
-        mRulerPaint = new Paint();
-        mRulerPaint.setAntiAlias(true);
-        mRulerPaint.setColor(DEFAULT_RULER_COLOR);
-        mRulerPaint.setTextSize(DEFAULT_RULER_TEXT_SIZE);
 
         mDotPaint = new Paint();
         mDotPaint.setAntiAlias(true);
@@ -155,10 +122,6 @@ public class DrawableImageView extends ImageView {
         TypedArray ta = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.DrawableImageView, 0, 0);
         try {
-            float rulerTextSize = ta.getFloat(R.styleable.DrawableImageView_div_ruler_text_size,
-                    DEFAULT_RULER_TEXT_SIZE);
-            int rulerColor = ta.getColor(R.styleable.DrawableImageView_div_ruler_color,
-                    DEFAULT_RULER_COLOR);
             float lineSize = ta.getFloat(R.styleable.DrawableImageView_div_line_size,
                     DEFAULT_LINE_SIZE);
             int lineColor = ta.getInteger(R.styleable.DrawableImageView_div_line_color,
@@ -167,8 +130,6 @@ public class DrawableImageView extends ImageView {
                     DEFAULT_DOT_SIZE);
             int dotColor = ta.getColor(R.styleable.DrawableImageView_div_dot_color,
                     DEFAULT_DOT_COLOR);
-            mRulerPaint.setTextSize(rulerTextSize);
-            mRulerPaint.setColor(rulerColor);
             mLinePaint.setStrokeWidth(lineSize);
             mLinePaint.setColor(lineColor);
             mDotPaint.setStrokeWidth(dotSize);
