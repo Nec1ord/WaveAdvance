@@ -45,8 +45,7 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         Pair<Float, Float> formattedCoordinates = formatCoordinates(dot.getX(), dot.getY());
         final float x = formattedCoordinates.first;
         final float y = formattedCoordinates.second;
-        displayCoordinates(x, y);
-        mBinding.drawableImageView.clearPoints();
+        clearView();
         mPresenter.keepComputingNewCoordinates(x, y, 50, 50);
     }
 
@@ -55,7 +54,7 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         final float x = formattedCoordinates.first;
         final float y = formattedCoordinates.second;
         displaySourceCoordinates(x, y);
-        mBinding.drawableImageView.clearPoints();
+        clearView();
         mPresenter.stopUpdating();
         mPresenter.updateSourcePosition(x, y);
     }
@@ -78,11 +77,6 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         mBinding.tvSourceY.setText(String.format(Locale.getDefault(), "Yo = %f", y));
     }
 
-    private void displayCoordinates(float x, float y) {
-        mBinding.tvX.setText(String.format(Locale.getDefault(), "X = %f", x));
-        mBinding.tvY.setText(String.format(Locale.getDefault(), "Y = %f", y));
-    }
-
     private void initToolbar(Toolbar toolbar) {
         toolbar.setTitle(R.string.activity_main_title);
         toolbar.inflateMenu(R.menu.menu_main);
@@ -98,6 +92,14 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
 
     private void setListeners() {
         mBinding.imageView.setOnTapListener(this);
+        mBinding.btnShowU.setOnClickListener(v -> {
+            clearView();
+            mPresenter.computeU();
+        });
+        mBinding.btnShowV.setOnClickListener(v -> {
+            clearView();
+            mPresenter.computeV();
+        });
         mBinding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override public void onDrawerSlide(View drawerView, float slideOffset) {
                 ActivityUtil.hideKeyboard(MainActivity.this);
@@ -112,6 +114,10 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
             @Override public void onDrawerStateChanged(int newState) {
             }
         });
+    }
+
+    private void clearView() {
+        mBinding.drawableImageView.clearPoints();
     }
 
 }

@@ -17,6 +17,8 @@ import rx.Observable;
 
 @Singleton
 public class MathManager {
+    public enum Coordinate {U, V}
+
     private PropertiesProvider mProvider;
     private Timer mTimer;
 
@@ -28,7 +30,8 @@ public class MathManager {
         mProvider.updateSourcePosition(x, y);
     }
 
-    public Observable<Pair<Double, Double>> updateCoordsByTime(double x, double y,
+    public Observable<Pair<Double, Double>> updateCoordsByTime(Coordinate which,
+                                                               double x, double y,
                                                                long period, double tDelta) {
         return Observable.create((Observable.OnSubscribe<Pair<Double, Double>>) subscriber -> {
             clearTimer();
@@ -44,10 +47,11 @@ public class MathManager {
                 @Override public void run() {
                     update();
                     final Complex exp = new Complex(0, -mProvider.omega() * t).exp();
-                    final double xNew = u.multiply(exp).getReal();
-                    final double yNew = v.multiply(exp).getReal();
+                    final double newCoordinate = which == Coordinate.U
+                            ? u.multiply(exp).getReal()
+                            : v.multiply(exp).getReal();
                     if (!subscriber.isUnsubscribed()) {
-                        subscriber.onNext(new Pair<>(xNew, yNew));
+                        subscriber.onNext(new Pair<>(t, newCoordinate));
                     } else {
                         this.cancel();
                     }
