@@ -1,5 +1,7 @@
 package com.nikolaykul.waveadvance.ui.main;
 
+import android.util.Pair;
+
 import com.nikolaykul.waveadvance.data.MathManager;
 import com.nikolaykul.waveadvance.di.scope.PerActivity;
 import com.nikolaykul.waveadvance.ui.base.Presenter;
@@ -16,6 +18,8 @@ import timber.log.Timber;
 public class MainPresenter extends Presenter<MainMvpView> {
     private final MathManager mManager;
     private final CompositeSubscription mSubscriptions;
+    private double mMaxU;
+    private double mMaxV;
     private float mLastX;
     private float mLastY;
     private long mLastPeriod;
@@ -29,6 +33,7 @@ public class MainPresenter extends Presenter<MainMvpView> {
 
     @Override
     public void init() {
+        clearMaxValues();
         mLastCoordinate = MathManager.Coordinate.U;
     }
 
@@ -59,9 +64,28 @@ public class MainPresenter extends Presenter<MainMvpView> {
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        getMvpView()::showNewCoordinate,
+                        this::showNewCoordinate,
                         t -> Timber.e(t, "Some error"));
         mSubscriptions.add(subscription);
+    }
+
+    public void clearMaxValues() {
+        mMaxU = Double.MIN_VALUE;
+        mMaxV = Double.MIN_VALUE;
+    }
+
+    private void showNewCoordinate(Pair<Double, Double> coordinate) {
+        // show max
+        final double newVal = coordinate.second;
+        if (mLastCoordinate == MathManager.Coordinate.U && mMaxU < newVal) {
+            mMaxU = newVal;
+            getMvpView().showMaxU(mMaxU);
+        } else if (mLastCoordinate == MathManager.Coordinate.V && mMaxV < newVal) {
+            mMaxV = newVal;
+            getMvpView().showMaxV(mMaxV);
+        }
+        // show current
+        getMvpView().showNewCoordinate(coordinate);
     }
 
     public void stopUpdating() {

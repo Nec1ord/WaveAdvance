@@ -35,6 +35,14 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         component.inject(this);
     }
 
+    @Override public void showMaxU(double u) {
+        mBinding.tvMax.setText(String.format(Locale.getDefault(), "Max U = %f", u));
+    }
+
+    @Override public void showMaxV(double v) {
+        mBinding.tvMax.setText(String.format(Locale.getDefault(), "Max V = %f", v));
+    }
+
     @Override public void showNewCoordinate(Pair<Double, Double> coordinate) {
         final double x = coordinate.first;
         final double y = coordinate.second;
@@ -45,7 +53,7 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         Pair<Float, Float> formattedCoordinates = formatCoordinates(dot.getX(), dot.getY());
         final float x = formattedCoordinates.first;
         final float y = formattedCoordinates.second;
-        clearView();
+        clearViews();
         mPresenter.keepComputingNewCoordinates(x, y, 50, 50);
     }
 
@@ -53,8 +61,7 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         Pair<Float, Float> formattedCoordinates = formatCoordinates(dot.getX(), dot.getY());
         final float x = formattedCoordinates.first;
         final float y = formattedCoordinates.second;
-        displaySourceCoordinates(x, y);
-        clearView();
+        clearViews();
         mPresenter.stopUpdating();
         mPresenter.updateSourcePosition(x, y);
     }
@@ -70,11 +77,6 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         final float newX = x / width * 100;
         final float newY = y / height * 100;
         return new Pair<>(newX, newY);
-    }
-
-    private void displaySourceCoordinates(float x, float y) {
-        mBinding.tvSourceX.setText(String.format(Locale.getDefault(), "Xo = %f", x));
-        mBinding.tvSourceY.setText(String.format(Locale.getDefault(), "Yo = %f", y));
     }
 
     private void initToolbar(Toolbar toolbar) {
@@ -93,11 +95,11 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
     private void setListeners() {
         mBinding.imageView.setOnTapListener(this);
         mBinding.btnShowU.setOnClickListener(v -> {
-            clearView();
+            clearViews();
             mPresenter.computeU();
         });
         mBinding.btnShowV.setOnClickListener(v -> {
-            clearView();
+            clearViews();
             mPresenter.computeV();
         });
         mBinding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
@@ -116,7 +118,11 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         });
     }
 
-    private void clearView() {
+    private void clearViews() {
+        // clear max
+        mBinding.tvMax.setText("");
+        mPresenter.clearMaxValues();
+        // clear image
         mBinding.drawableImageView.clearPoints();
     }
 
