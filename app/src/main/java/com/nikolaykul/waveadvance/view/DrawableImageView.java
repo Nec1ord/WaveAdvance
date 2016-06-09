@@ -26,6 +26,7 @@ public class DrawableImageView extends ImageView {
     private static final int DEFAULT_DOT_COLOR = Color.WHITE;
     private ArrayList<Dot> mDots;
     private float mDy;
+    private float mDx;
     private float maxY;
     private float minY;
     private Paint mLinePaint;
@@ -67,7 +68,7 @@ public class DrawableImageView extends ImageView {
         super.onDraw(canvas);
         if (isInEditMode() || mDots.isEmpty()) return;
 
-        canvas.translate(0f, mDy);
+        canvas.translate(mDx, mDy);
 
         // draw all Dots with ruler
         for (int i = 0; i < mDots.size() - 1; i++) {
@@ -89,8 +90,9 @@ public class DrawableImageView extends ImageView {
 
     public void addPoint(Pair<Float, Float> point) {
         final Dot dot = new Dot(point.first, point.second);
+        updateProperties(dot);
         mDots.add(dot);
-        updateTranslateFactor(dot.getY());
+        updateOrdinate(dot.getY());
         invalidate();
     }
 
@@ -100,11 +102,15 @@ public class DrawableImageView extends ImageView {
         invalidate();
     }
 
-    private void updateTranslateFactor(float y) {
+    private void updateOrdinate(float y) {
         if (y > maxY) maxY = y;
         if (y < minY) minY = y;
         final float maxDiff = Math.abs(maxY) - Math.abs(minY);
         mDy = (getHeight() / 2f) - (maxDiff / 2f);
+    }
+
+    private void updateAbscissa(float currentX, float previousX) {
+        mDx -= Math.abs(currentX - previousX);
     }
 
     private void drawRuler(Canvas canvas, float x, float y) {
@@ -174,8 +180,17 @@ public class DrawableImageView extends ImageView {
 
     private void clearProperties() {
         mDy = 0f;
+        mDx = 0f;
         minY = Float.MAX_VALUE;
         maxY = Float.MIN_VALUE;
+    }
+
+    private void updateProperties(Dot dot) {
+        if (mDots.size() < 2 || dot.getX() < (getWidth() * 4 / 5)) return;
+        final Dot removedDot = mDots.get(0);
+        updateOrdinate(removedDot.getY());
+        updateAbscissa(removedDot.getX(), mDots.get(1).getX());
+        mDots.remove(0);
     }
 
 
