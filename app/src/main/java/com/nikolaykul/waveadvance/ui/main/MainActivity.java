@@ -51,33 +51,19 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
     }
 
     @Override public void onSingleTap(Dot dot) {
-        Pair<Float, Float> formattedCoordinates = formatCoordinates(dot.getX(), dot.getY());
-        final float x = formattedCoordinates.first;
-        final float y = formattedCoordinates.second;
         clearViews();
-        mPresenter.keepComputingNewCoordinates(x, y, 50, 50);
+        mPresenter.keepComputingNewCoordinates(dot.getX(), dot.getY(), 50, 50);
     }
 
     @Override public void onDoubleTap(Dot dot) {
-        Pair<Float, Float> formattedCoordinates = formatCoordinates(dot.getX(), dot.getY());
-        final float x = formattedCoordinates.first;
-        final float y = formattedCoordinates.second;
         clearViews();
         mPresenter.stopUpdating();
-        mPresenter.updateSourcePosition(x, y);
+        mPresenter.updateSourcePosition(dot.getX(), dot.getY());
     }
 
     @Override protected void onDestroy() {
         mPresenter.destroy();
         super.onDestroy();
-    }
-
-    private Pair<Float, Float> formatCoordinates(float x, float y) {
-        int width = mBinding.ivTouchable.getWidth();
-        int height = mBinding.ivTouchable.getHeight();
-        final float newX = x / width * 100;
-        final float newY = y / height * 100;
-        return new Pair<>(newX, newY);
     }
 
     private void initToolbar(Toolbar toolbar) {
