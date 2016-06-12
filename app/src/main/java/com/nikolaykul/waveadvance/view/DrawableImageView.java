@@ -21,6 +21,7 @@ public class DrawableImageView extends ImageView {
     private static final int DEFAULT_LINE_COLOR = Color.RED;
     private static final int DEFAULT_DOT_COLOR = Color.WHITE;
     private ArrayList<Dot> mDots;
+    private float mSy;
     private float mDy;
     private float mDx;
     private float maxY;
@@ -67,22 +68,22 @@ public class DrawableImageView extends ImageView {
         // draw all Dots
         for (int i = 0; i < mDots.size() - 1; i++) {
             final float x1 = mDots.get(i).getX();
-            final float y1 = mDots.get(i).getY();
+            final float y1 = mDots.get(i).getY() * mSy;
             final float x2 = mDots.get(i + 1).getX();
-            final float y2 = mDots.get(i + 1).getY();
+            final float y2 = mDots.get(i + 1).getY() * mSy;
             canvas.drawLine(x1, y1, x2, y2, mLinePaint);
         }
 
         // draw last Dot
         final Dot lastDot = mDots.get(mDots.size() - 1);
-        canvas.drawPoint(lastDot.getX(), lastDot.getY(), mDotPaint);
+        canvas.drawPoint(lastDot.getX(), lastDot.getY() * mSy, mDotPaint);
     }
 
     public void addPoint(Pair<Float, Float> point) {
         final Dot dot = new Dot(point.first, point.second);
-        updateProperties(dot);
         mDots.add(dot);
-        updateOrdinate(dot.getY());
+        removeLastDot(dot);
+        updateProperties();
         invalidate();
     }
 
@@ -92,16 +93,6 @@ public class DrawableImageView extends ImageView {
         invalidate();
     }
 
-    private void updateOrdinate(float y) {
-        if (y > maxY) maxY = y;
-        if (y < minY) minY = y;
-        final float maxDiff = Math.abs(maxY) - Math.abs(minY);
-        mDy = (getHeight() / 2f) - (maxDiff / 2f);
-    }
-
-    private void updateAbscissa(float currentX, float previousX) {
-        mDx -= Math.abs(currentX - previousX);
-    }
     private void init(Context context, AttributeSet attrs) {
         setFocusable(false);
         setFocusableInTouchMode(false);
@@ -140,19 +131,44 @@ public class DrawableImageView extends ImageView {
     }
 
     private void clearProperties() {
+        mSy = 1f;
         mDy = 0f;
         mDx = 0f;
         minY = Float.MAX_VALUE;
         maxY = Float.MIN_VALUE;
     }
 
-    private void updateProperties(Dot dot) {
-        if (mDots.size() < 2 || dot.getX() < (getWidth() * 4 / 5)) return;
-        final Dot removedDot = mDots.get(0);
-        updateOrdinate(removedDot.getY());
-        updateAbscissa(removedDot.getX(), mDots.get(1).getX());
+    private void removeLastDot(Dot newDot) {
+        if (newDot.getX() < (getWidth() * 4 / 5) || mDots.size() < 2) return;
+        updateAbscissa(mDots.get(0).getX(), mDots.get(1).getX());
         mDots.remove(0);
     }
 
+    private void updateProperties() {
+        if (mDots.size() < 1) return;
+        final Dot lastDot = mDots.get(mDots.size() - 1);
+        updateMaxMin(lastDot.getY());
+        updateOrdinate();
+        updateScale();
+    }
+
+    private void updateMaxMin(float y) {
+        if (y > maxY) maxY = y;
+        if (y < minY) minY = y;
+    }
+
+    private void updateOrdinate() {
+        if (maxY == Float.MIN_VALUE && minY == Float.MAX_VALUE) return;
+        final float maxDiff = Math.abs(maxY) - Math.abs(minY);
+        mDy = (getHeight() - maxDiff) / 2f;
+    }
+
+    private void updateAbscissa(float currentX, float previousX) {
+        mDx -= Math.abs(currentX - previousX);
+    }
+
+    private void updateScale() {
+        // TODO: update mSy
+    }
 
 }
