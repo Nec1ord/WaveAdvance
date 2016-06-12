@@ -32,6 +32,11 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         mBinding.ivTouchable.postDelayed(this::initSource, 1000);
     }
 
+    @Override protected void onStop() {
+        mPresenter.stopUpdating();
+        super.onStop();
+    }
+
     @Override protected void injectSelf(ActivityComponent component) {
         component.inject(this);
     }
