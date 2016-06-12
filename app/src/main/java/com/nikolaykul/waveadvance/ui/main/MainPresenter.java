@@ -1,5 +1,7 @@
 package com.nikolaykul.waveadvance.ui.main;
 
+import android.util.Pair;
+
 import com.nikolaykul.waveadvance.data.MathManager;
 import com.nikolaykul.waveadvance.di.scope.PerActivity;
 import com.nikolaykul.waveadvance.ui.base.Presenter;
@@ -16,6 +18,13 @@ import timber.log.Timber;
 public class MainPresenter extends Presenter<MainMvpView> {
     private final MathManager mManager;
     private final CompositeSubscription mSubscriptions;
+    private double mMaxU;
+    private double mMaxV;
+    private float mLastX;
+    private float mLastY;
+    private long mLastPeriod;
+    private double mLastDeltaT;
+    private MathManager.Coordinate mLastCoordinate;
 
     @Inject public MainPresenter(MathManager manager) {
         this.mManager = manager;
@@ -24,7 +33,8 @@ public class MainPresenter extends Presenter<MainMvpView> {
 
     @Override
     public void init() {
-        Timber.i("MainPresenter was initialized.");
+        clearMaxValues();
+        mLastCoordinate = MathManager.Coordinate.U;
     }
 
     @Override
@@ -36,26 +46,57 @@ public class MainPresenter extends Presenter<MainMvpView> {
         mManager.updateSourcePosition(x, y);
     }
 
+    public void computeU() {
+        mLastCoordinate = MathManager.Coordinate.U;
+        keepComputingNewCoordinates(mLastX, mLastY, mLastPeriod, mLastDeltaT);
+    }
+
+    public void computeV() {
+        mLastCoordinate = MathManager.Coordinate.V;
+        keepComputingNewCoordinates(mLastX, mLastY, mLastPeriod, mLastDeltaT);
+    }
+
     public void keepComputingNewCoordinates(float x, float y, long period, double tDelta) {
         stopUpdating();
-        final Subscription subscription = mManager.updateCoordsByTime(x, y, period, tDelta)
+        rememberLastData(x, y, period, tDelta);
+        final Subscription subscription = mManager.updateCoordsByTime(mLastCoordinate,
+                x, y, period, tDelta)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(getMvpView()::showNewCoordinate);
+                .subscribe(
+                        this::showNewCoordinate,
+                        t -> Timber.e(t, "Some error"));
         mSubscriptions.add(subscription);
     }
 
-    public void computeNewCoordinate(float x, float y) {
-        stopUpdating();
-        final Subscription subscription = mManager.updateCoords(x, y)
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(getMvpView()::showNewCoordinate);
-        mSubscriptions.add(subscription);
+    public void clearMaxValues() {
+        mMaxU = Double.MIN_VALUE;
+        mMaxV = Double.MIN_VALUE;
+    }
+
+    private void showNewCoordinate(Pair<Double, Double> coordinate) {
+        // show max
+        final double newVal = coordinate.second;
+        if (mLastCoordinate == MathManager.Coordinate.U && mMaxU < newVal) {
+            mMaxU = newVal;
+            getMvpView().showMaxU(mMaxU);
+        } else if (mLastCoordinate == MathManager.Coordinate.V && mMaxV < newVal) {
+            mMaxV = newVal;
+            getMvpView().showMaxV(mMaxV);
+        }
+        // show current
+        getMvpView().showNewCoordinate(coordinate);
     }
 
     public void stopUpdating() {
         mSubscriptions.clear();
+    }
+
+    private void rememberLastData(float x, float y, long period, double tDelta) {
+        mLastX = x;
+        mLastY = y;
+        mLastPeriod = period;
+        mLastDeltaT = tDelta;
     }
 
 }

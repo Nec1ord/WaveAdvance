@@ -14,6 +14,8 @@ import com.nikolaykul.waveadvance.databinding.ItemPropertyBinding;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 public class PropertiesRVAdapter extends
         RecyclerView.Adapter<PropertiesRVAdapter.PropertiesViewHolder> {
     private List<Property> mItems;
@@ -60,10 +62,14 @@ public class PropertiesRVAdapter extends
                 }
 
                 @Override public void afterTextChanged(Editable s) {
-                    final String str = s.toString().replaceAll("\\D+", "");
-                    if (null == str || str.isEmpty()) return;
-                    final double value = Double.parseDouble(str);
-                    item.setValue(value);
+                    final String str = s.toString();
+                    if (str.isEmpty()) return;
+                    try {
+                        final double value = Double.parseDouble(str);
+                        item.setValue(value);
+                    } catch (NumberFormatException e) {
+                        Timber.e(e, "Couldn't parse to double");
+                    }
                 }
             });
         }

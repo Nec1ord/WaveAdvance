@@ -29,56 +29,41 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         setListeners();
         initToolbar(mBinding.toolbar);
         mPresenter.initWithView(this);
+        mBinding.ivTouchable.postDelayed(this::initSource, 1000);
     }
 
     @Override protected void injectSelf(ActivityComponent component) {
         component.inject(this);
     }
 
+    @Override public void showMaxU(double u) {
+        mBinding.tvMax.setText(String.format(Locale.getDefault(), "Max U = %f", u));
+    }
+
+    @Override public void showMaxV(double v) {
+        mBinding.tvMax.setText(String.format(Locale.getDefault(), "Max V = %f", v));
+    }
+
     @Override public void showNewCoordinate(Pair<Double, Double> coordinate) {
         final double x = coordinate.first;
         final double y = coordinate.second;
-        displayCoordinates((float) x, (float) y);
-        mBinding.drawableImageView.addPoint(new Pair<>((float) x, (float) y));
+        mBinding.ivDrawable.addPoint(new Pair<>((float) x, (float) y));
     }
 
     @Override public void onSingleTap(Dot dot) {
-        Pair<Float, Float> formattedCoordinates = formatCoordinates(dot.getX(), dot.getY());
-        final float x = formattedCoordinates.first;
-        final float y = formattedCoordinates.second;
-        mPresenter.keepComputingNewCoordinates(x, y, 1000, 0.05);
-        mBinding.drawableImageView.clearPoints();
+        clearViews();
+        mPresenter.keepComputingNewCoordinates(dot.getX(), dot.getY(), 50, 50);
     }
 
     @Override public void onDoubleTap(Dot dot) {
-        Pair<Float, Float> formattedCoordinates = formatCoordinates(dot.getX(), dot.getY());
-        final float x = formattedCoordinates.first;
-        final float y = formattedCoordinates.second;
-        displaySourceCoordinates(x, y);
-        mPresenter.updateSourcePosition(x, y);
+        clearViews();
+        mPresenter.stopUpdating();
+        mPresenter.updateSourcePosition(dot.getX(), dot.getY());
     }
 
     @Override protected void onDestroy() {
         mPresenter.destroy();
         super.onDestroy();
-    }
-
-    private Pair<Float, Float> formatCoordinates(float x, float y) {
-        int width = mBinding.imageView.getWidth();
-        int height = mBinding.imageView.getHeight();
-        final float newX = x / width * 100;
-        final float newY = y / height * 100;
-        return new Pair<>(newX, newY);
-    }
-
-    private void displaySourceCoordinates(float x, float y) {
-        mBinding.tvSourceX.setText(String.format(Locale.getDefault(), "Xo = %f", x));
-        mBinding.tvSourceY.setText(String.format(Locale.getDefault(), "Yo = %f", y));
-    }
-
-    private void displayCoordinates(float x, float y) {
-        mBinding.tvX.setText(String.format(Locale.getDefault(), "U = %f", x));
-        mBinding.tvY.setText(String.format(Locale.getDefault(), "V = %f", y));
     }
 
     private void initToolbar(Toolbar toolbar) {
@@ -95,7 +80,15 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
     }
 
     private void setListeners() {
-        mBinding.imageView.setOnTapListener(this);
+        mBinding.ivTouchable.setOnTapListener(this);
+        mBinding.btnShowU.setOnClickListener(v -> {
+            clearViews();
+            mPresenter.computeU();
+        });
+        mBinding.btnShowV.setOnClickListener(v -> {
+            clearViews();
+            mPresenter.computeV();
+        });
         mBinding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override public void onDrawerSlide(View drawerView, float slideOffset) {
                 ActivityUtil.hideKeyboard(MainActivity.this);
@@ -110,6 +103,21 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
             @Override public void onDrawerStateChanged(int newState) {
             }
         });
+    }
+
+    private void initSource() {
+        final float x0 = mBinding.ivTouchable.getWidth() / 2f;
+        final float y0 = mBinding.ivTouchable.getHeight() / 2f;
+        mBinding.ivTouchable.setSourceDot(x0, y0);
+        this.onDoubleTap(new Dot(x0, y0));
+    }
+
+    private void clearViews() {
+        // clear max
+        mBinding.tvMax.setText("");
+        mPresenter.clearMaxValues();
+        // clear image
+        mBinding.ivDrawable.clearPoints();
     }
 
 }

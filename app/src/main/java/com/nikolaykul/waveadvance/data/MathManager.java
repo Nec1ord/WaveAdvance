@@ -17,7 +17,8 @@ import rx.Observable;
 
 @Singleton
 public class MathManager {
-    private static final Complex I_SQRT = Complex.I.sqrt();
+    public enum Coordinate {U, V}
+
     private PropertiesProvider mProvider;
     private Timer mTimer;
 
@@ -29,7 +30,8 @@ public class MathManager {
         mProvider.updateSourcePosition(x, y);
     }
 
-    public Observable<Pair<Double, Double>> updateCoordsByTime(double x, double y,
+    public Observable<Pair<Double, Double>> updateCoordsByTime(Coordinate which,
+                                                               double x, double y,
                                                                long period, double tDelta) {
         return Observable.create((Observable.OnSubscribe<Pair<Double, Double>>) subscriber -> {
             clearTimer();
@@ -45,10 +47,11 @@ public class MathManager {
                 @Override public void run() {
                     update();
                     final Complex exp = new Complex(0, -mProvider.omega() * t).exp();
-                    final double xNew = u.multiply(exp).getReal();
-                    final double yNew = v.multiply(exp).getReal();
+                    final double newCoordinate = which == Coordinate.U
+                            ? u.multiply(exp).getReal()
+                            : v.multiply(exp).getReal();
                     if (!subscriber.isUnsubscribed()) {
-                        subscriber.onNext(new Pair<>(xNew, yNew));
+                        subscriber.onNext(new Pair<>(t, newCoordinate));
                     } else {
                         this.cancel();
                     }
@@ -68,17 +71,6 @@ public class MathManager {
         });
     }
 
-    public Observable<Pair<Double, Double>> updateCoords(double x, double y) {
-        return Observable.create((Observable.OnSubscribe<Pair<Double, Double>>) subscriber -> {
-            final double xNew = u(x, y).getReal();
-            final double yNew = v(x, y).getReal();
-            if (!subscriber.isUnsubscribed()) {
-                subscriber.onNext(new Pair<>(xNew, yNew));
-                subscriber.onCompleted();
-            }
-        });
-    }
-
     private Complex u(double x, double y) {
         return coordinateFunction(x - mProvider.x0(), getLengthFromTheSource(x, y));
     }
@@ -88,13 +80,23 @@ public class MathManager {
     }
 
     private Complex coordinateFunction(double shift, double r) {
-        final double scale = shift / r;
-        final Complex arg1 = computeHankel(r * mProvider.kappa1()).multiply(mProvider.kappa1());
-        final Complex temp = I_SQRT.multiply(mProvider.kappa1());
-        final Complex arg2 = computeHankel(temp.multiply(r)).multiply(temp);
-        return arg1.subtract(arg2)
-                .multiply(scale)
-                .multiply(computePreSolvedPart());
+        final double kappa1Sqr = mProvider.kappa1() * mProvider.kappa1();
+        final double k1Sqr = mProvider.k1() * mProvider.k1();
+        final Complex iSqrtK1 = Complex.I.sqrt().multiply(mProvider.k1());
+        // fts
+        final Complex fstArg1 = new Complex(0.0, mProvider.gamma() * shift);
+        final Complex fstArg2 = new Complex(kappa1Sqr, -k1Sqr)
+                .multiply(r * 4 * mProvider.kappa() * (mProvider.lambda() + 2 * mProvider.mu()));
+        final Complex fst = fstArg1
+                .divide(fstArg2);
+        // snd
+        final Complex sndArg1 = computeHankel(r * mProvider.kappa1())
+                .multiply(mProvider.kappa1());
+        final Complex sndArg2 = computeHankel(iSqrtK1.multiply(r))
+                .multiply(iSqrtK1);
+        final Complex snd = sndArg1.subtract(sndArg2);
+        // answer
+        return fst.multiply(snd);
     }
 
     private Complex computeHankel(double z) {
@@ -102,30 +104,24 @@ public class MathManager {
     }
 
     private Complex computeHankel(Complex z) {
-        final Complex arg1 = z
-                .multiply(FastMath.PI)
-                .reciprocal()
-                .multiply(2.0)
+        // fst
+        final Complex fstArg1 = new Complex(2.0, 0.0);
+        final Complex fstArg2 = z.multiply(FastMath.PI);
+        final Complex fst = fstArg1
+                .divide(fstArg2)
                 .sqrt();
-        final Complex arg2 = z
-                .subtract(3.0 / 4.0 * FastMath.PI)
-                .exp();
-        return arg1.multiply(arg2);
+        // snd
+        final Complex sndArg1 = z.subtract(3.0 / 4.0 * FastMath.PI);
+        final Complex sndArg2 = new Complex(-sndArg1.getImaginary(), sndArg1.getReal()); // i*z
+        final Complex snd = sndArg2.exp();
+        // answer
+        return fst.multiply(snd);
     }
 
     private double getLengthFromTheSource(double x, double y) {
         final double xSqr = (x - mProvider.x0()) * (x - mProvider.x0());
         final double ySqr = (y - mProvider.y0()) * (y - mProvider.y0());
         return FastMath.sqrt(xSqr + ySqr);
-    }
-
-    private Complex computePreSolvedPart() {
-        final Complex numerator = new Complex(0.0, mProvider.gamma());
-        final double temp = 4.0 * mProvider.kappa() * (mProvider.lambda() + 2.0 * mProvider.mu());
-        final Complex denominator = new Complex(
-                mProvider.kappa1() * mProvider.kappa1(), -(mProvider.k1() * mProvider.k1()))
-                .multiply(temp);
-        return numerator.divide(denominator);
     }
 
     private void clearTimer() {

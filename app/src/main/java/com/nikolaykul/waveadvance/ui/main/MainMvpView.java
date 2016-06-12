@@ -6,4 +6,6 @@ import com.nikolaykul.waveadvance.ui.base.MvpView;
 
 public interface MainMvpView extends MvpView {
     void showNewCoordinate(Pair<Double, Double> coordinate);
+    void showMaxU(double u);
+    void showMaxV(double v);
 }

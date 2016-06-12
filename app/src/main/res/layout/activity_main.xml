@@ -34,42 +34,32 @@
                     app:layout_scrollFlags="scroll"
                     />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/tv_max"
                     android:layout_height="@dimen/view_height_small"
-                    android:orientation="horizontal"
-                    >
-
-                    <TextView
-                        android:id="@+id/tv_source_x"
-                        style="@style/AppTheme.MainTextView"
-                        tools:text="X = 12321.213231"
-                        />
-
-                    <TextView
-                        android:id="@+id/tv_source_y"
-                        style="@style/AppTheme.MainTextView"
-                        tools:text="Y = 12321.213231"
-                        />
-
-                </LinearLayout>
+                    style="@style/AppTheme.MainTextView"
+                    tools:text="Max U = 12321.213231"
+                    />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/view_height_small"
+                    android:paddingBottom="@dimen/padding_small"
                     android:orientation="horizontal"
                     >
 
-                    <TextView
-                        android:id="@+id/tv_x"
+                    <Button
+                        android:id="@+id/btn_show_u"
                         style="@style/AppTheme.MainTextView"
-                        tools:text="X = 12321.213231"
+                        android:background="@drawable/button_effect"
+                        android:text="@string/show_u"
                         />
 
-                    <TextView
-                        android:id="@+id/tv_y"
+                    <Button
+                        android:id="@+id/btn_show_v"
                         style="@style/AppTheme.MainTextView"
-                        tools:text="Y = 12321.213231"
+                        android:background="@drawable/button_effect"
+                        android:text="@string/show_v"
                         />
 
                 </LinearLayout>
@@ -77,18 +67,19 @@
             </android.support.design.widget.AppBarLayout>
 
             <com.nikolaykul.waveadvance.view.DrawableImageView
-                android:id="@+id/drawable_image_view"
+                android:id="@+id/iv_drawable"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/view_height_big"
                 android:background="@color/purple"
                 />
 
             <com.nikolaykul.waveadvance.view.TouchableImageView
-                android:id="@+id/imageView"
+                android:id="@+id/iv_touchable"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@android:color/black"
                 app:dot_color="@color/colorPrimary"
+                app:source_dot_color="@color/colorAccent"
                 app:dot_radius="20"
                 />
 
@@ -106,9 +97,9 @@
 
             <fragment
                 android:id="@+id/drawerFragment"
+                android:name="com.nikolaykul.waveadvance.ui.properties.PropertiesFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:name="com.nikolaykul.waveadvance.ui.properties.PropertiesFragment"
                 tools:layout="@layout/fragment_properties"
                 />
 

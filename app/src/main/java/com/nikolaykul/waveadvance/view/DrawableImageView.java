@@ -6,7 +6,6 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Pair;
@@ -17,15 +16,18 @@ import com.nikolaykul.waveadvance.R;
 import java.util.ArrayList;
 
 public class DrawableImageView extends ImageView {
-    private static final float RULER_SIZE = 10f;
-    private static final float DEFAULT_RULER_TEXT_SIZE = 22f;
     private static final float DEFAULT_LINE_SIZE = 5f;
-    private static final int DEFAULT_RULER_COLOR = Color.WHITE;
+    private static final float DEFAULT_DOT_SIZE = 7f;
     private static final int DEFAULT_LINE_COLOR = Color.RED;
+    private static final int DEFAULT_DOT_COLOR = Color.WHITE;
     private ArrayList<Dot> mDots;
+    private float mSy;
+    private float mDy;
+    private float mDx;
+    private float maxY;
+    private float minY;
     private Paint mLinePaint;
-    private Paint mRulerPaint;
-    private Rect mTextBounds;
+    private Paint mDotPaint;
 
     public DrawableImageView(Context context) {
         super(context);
@@ -61,51 +63,34 @@ public class DrawableImageView extends ImageView {
         super.onDraw(canvas);
         if (isInEditMode() || mDots.isEmpty()) return;
 
-        // find dx, dy
-        final Dot lastDot = mDots.get(mDots.size() - 1);
-        final float dx = (getWidth() / 2) - lastDot.getX();
-        final float dy = (getHeight() / 2) - lastDot.getY();
+        canvas.translate(mDx, mDy);
 
-        // draw last Dot's ruler and value
-        drawRulerWithText(canvas,
-                lastDot.getX() + dx, lastDot.getY() + dy,
-                lastDot.getX() + "", lastDot.getY() + "");
-
-        // draw all Dots with ruler
+        // draw all Dots
         for (int i = 0; i < mDots.size() - 1; i++) {
-            final float x1 = mDots.get(i).getX() + dx;
-            final float y1 = mDots.get(i).getY() + dy;
-            final float x2 = mDots.get(i + 1).getX() + dx;
-            final float y2 = mDots.get(i + 1).getY() + dy;
+            final float x1 = mDots.get(i).getX();
+            final float y1 = mDots.get(i).getY() * mSy;
+            final float x2 = mDots.get(i + 1).getX();
+            final float y2 = mDots.get(i + 1).getY() * mSy;
             canvas.drawLine(x1, y1, x2, y2, mLinePaint);
-            drawRuler(canvas, x1, y1);
         }
+
+        // draw last Dot
+        final Dot lastDot = mDots.get(mDots.size() - 1);
+        canvas.drawPoint(lastDot.getX(), lastDot.getY() * mSy, mDotPaint);
     }
 
     public void addPoint(Pair<Float, Float> point) {
-        mDots.add(new Dot(point.first, point.second));
+        final Dot dot = new Dot(point.first, point.second);
+        mDots.add(dot);
+        removeLastDot(dot);
+        updateProperties();
         invalidate();
     }
 
     public void clearPoints() {
         mDots.clear();
+        clearProperties();
         invalidate();
-    }
-
-    private void drawRuler(Canvas canvas, float x, float y) {
-        canvas.drawLine(x, getHeight(), x, getHeight() - RULER_SIZE, mRulerPaint);
-        canvas.drawLine(0, y, RULER_SIZE, y, mRulerPaint);
-    }
-
-    private void drawRulerWithText(Canvas canvas, float x, float y, String xText, String yText) {
-        drawRuler(canvas, x, y);
-        final float delta = RULER_SIZE + 10f;
-        // x
-        mRulerPaint.getTextBounds(xText, 0, xText.length(), mTextBounds);
-        canvas.drawText(xText, x - mTextBounds.centerX(), getHeight() - delta, mRulerPaint);
-        // y
-        mRulerPaint.getTextBounds(yText, 0, yText.length(), mTextBounds);
-        canvas.drawText(yText, delta, y - mTextBounds.centerY(), mRulerPaint);
     }
 
     private void init(Context context, AttributeSet attrs) {
@@ -113,37 +98,102 @@ public class DrawableImageView extends ImageView {
         setFocusableInTouchMode(false);
 
         mDots = new ArrayList<>();
-        mTextBounds = new Rect();
+        clearProperties();
 
         mLinePaint = new Paint();
         mLinePaint.setAntiAlias(true);
         mLinePaint.setColor(DEFAULT_LINE_COLOR);
-        mLinePaint.setStrokeWidth(5f);
+        mLinePaint.setStrokeWidth(DEFAULT_LINE_SIZE);
 
-        mRulerPaint = new Paint();
-        mRulerPaint.setAntiAlias(true);
-        mRulerPaint.setColor(DEFAULT_RULER_COLOR);
-        mRulerPaint.setTextSize(DEFAULT_RULER_TEXT_SIZE);
+        mDotPaint = new Paint();
+        mDotPaint.setAntiAlias(true);
+        mDotPaint.setColor(DEFAULT_DOT_COLOR);
+        mDotPaint.setStrokeWidth(DEFAULT_DOT_SIZE);
 
         TypedArray ta = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.DrawableImageView, 0, 0);
         try {
-            float rulerTextSize = ta.getFloat(R.styleable.DrawableImageView_ruler_text_size,
-                    DEFAULT_RULER_TEXT_SIZE);
-            int rulerColor = ta.getColor(R.styleable.DrawableImageView_ruler_color,
-                    DEFAULT_RULER_COLOR);
-            float lineSize = ta.getFloat(R.styleable.DrawableImageView_line_size,
+            float lineSize = ta.getFloat(R.styleable.DrawableImageView_div_line_size,
                     DEFAULT_LINE_SIZE);
-            int lineColor = ta.getInteger(R.styleable.DrawableImageView_line_color,
+            int lineColor = ta.getInteger(R.styleable.DrawableImageView_div_line_color,
                     DEFAULT_LINE_COLOR);
-            mRulerPaint.setTextSize(rulerTextSize);
-            mRulerPaint.setColor(rulerColor);
+            float dotSize = ta.getFloat(R.styleable.DrawableImageView_div_dot_size,
+                    DEFAULT_DOT_SIZE);
+            int dotColor = ta.getColor(R.styleable.DrawableImageView_div_dot_color,
+                    DEFAULT_DOT_COLOR);
             mLinePaint.setStrokeWidth(lineSize);
             mLinePaint.setColor(lineColor);
+            mDotPaint.setStrokeWidth(dotSize);
+            mDotPaint.setColor(dotColor);
         } finally {
             ta.recycle();
         }
     }
 
+    private void clearProperties() {
+        mSy = 1f;
+        mDy = 0f;
+        mDx = 0f;
+        minY = Float.MAX_VALUE;
+        maxY = Float.MIN_VALUE;
+    }
+
+    private void removeLastDot(Dot newDot) {
+        if (newDot.getX() < (getWidth() * 4 / 5) || mDots.size() < 2) return;
+        updateAbscissa(mDots.get(0).getX(), mDots.get(1).getX());
+        mDots.remove(0);
+    }
+
+    private void updateProperties() {
+        if (mDots.size() < 1) return;
+        final Dot lastDot = mDots.get(mDots.size() - 1);
+        updateMaxMin(lastDot.getY());
+        updateOrdinate();
+        updateScale();
+    }
+
+    private void updateMaxMin(float y) {
+        if (y > maxY) maxY = y;
+        if (y < minY) minY = y;
+    }
+
+    private void updateOrdinate() {
+        if (maxY == Float.MIN_VALUE && minY == Float.MAX_VALUE) return;
+        final float maxDiff = Math.abs(maxY) - Math.abs(minY);
+        mDy = (getHeight() - maxDiff) / 2f;
+    }
+
+    private void updateAbscissa(float currentX, float previousX) {
+        mDx -= Math.abs(currentX - previousX);
+    }
+
+    private void updateScale() {
+        float newSy = (float) Math.pow(10, getScaleFactor());
+        if (newSy != 0f) mSy = newSy;
+    }
+
+    private int getScaleFactor() {
+        if (maxY == Float.MIN_VALUE && minY == Float.MAX_VALUE) return 0;
+
+        final float maxValue = Math.max(Math.abs(maxY), Math.abs(minY));
+        final float maxTranslatedValue = maxValue + mDy;
+
+        if (maxTranslatedValue >= getHeight()) {
+            return getScaleReduceFactor(maxValue, 10);
+        } else if (maxValue < 10) {
+            return getScaleIncreaseFactor(maxValue, 10);
+        }
+        return 0;
+    }
+
+    private int getScaleReduceFactor(float number, float lowerBound) {
+        if (Math.abs(number) <= lowerBound || number == 0f) return 0;
+        return -1 - getScaleReduceFactor(number % 10, lowerBound);
+    }
+
+    private int getScaleIncreaseFactor(float number, float upperBound) {
+        if (Math.abs(number) >= upperBound || number == 0f) return 0;
+        return 1 + getScaleIncreaseFactor(number * 10, upperBound);
+    }
 
 }

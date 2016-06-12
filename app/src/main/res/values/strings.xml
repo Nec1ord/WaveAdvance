@@ -1,5 +1,7 @@
 <resources>
     <string name="activity_main_title">Wave advance</string>
+    <string name="show_u">Show U</string>
+    <string name="show_v">Show V</string>
     <string name="properties_title">Свойства среды</string>
     <string name="message_loading">Загрузка…</string>
     <string name="x0">x0</string>

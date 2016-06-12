@@ -15,6 +15,7 @@
 
     <!-- Padding -->
     <dimen name="padding_normal">16dp</dimen>
+    <dimen name="padding_small">10dp</dimen>
 
     <!-- Margin -->
     <dimen name="margin_normal">16dp</dimen>
