@@ -168,7 +168,32 @@ public class DrawableImageView extends ImageView {
     }
 
     private void updateScale() {
-        // TODO: update mSy
+        float newSy = (float) Math.pow(10, getScaleFactor());
+        if (newSy != 0f) mSy = newSy;
+    }
+
+    private int getScaleFactor() {
+        if (maxY == Float.MIN_VALUE && minY == Float.MAX_VALUE) return 0;
+
+        final float maxValue = Math.max(Math.abs(maxY), Math.abs(minY));
+        final float maxTranslatedValue = maxValue + mDy;
+
+        if (maxTranslatedValue >= getHeight()) {
+            return getScaleReduceFactor(maxValue, 10);
+        } else if (maxValue < 10) {
+            return getScaleIncreaseFactor(maxValue, 10);
+        }
+        return 0;
+    }
+
+    private int getScaleReduceFactor(float number, float lowerBound) {
+        if (Math.abs(number) <= lowerBound || number == 0f) return 0;
+        return -1 - getScaleReduceFactor(number % 10, lowerBound);
+    }
+
+    private int getScaleIncreaseFactor(float number, float upperBound) {
+        if (Math.abs(number) >= upperBound || number == 0f) return 0;
+        return 1 + getScaleIncreaseFactor(number * 10, upperBound);
     }
 
 }
