@@ -55,6 +55,11 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         mBinding.ivDrawable.addPoint(new Pair<>((float) x, (float) y));
     }
 
+    @Override public void onResumeUpdating() {
+    }
+    @Override public void onStopUpdating() {
+    }
+
     @Override public void onSingleTap(Dot dot) {
         clearViews();
         mPresenter.keepComputingNewCoordinates(dot.getX(), dot.getY(), 50, 50);
@@ -62,7 +67,6 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
 
     @Override public void onDoubleTap(Dot dot) {
         clearViews();
-        mPresenter.stopUpdating();
         mPresenter.updateSourcePosition(dot.getX(), dot.getY());
     }
 
@@ -118,10 +122,8 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
     }
 
     private void clearViews() {
-        // clear max
+        mPresenter.stopUpdating();
         mBinding.tvMax.setText("");
-        mPresenter.clearMaxValues();
-        // clear image
         mBinding.ivDrawable.clearPoints();
     }
 

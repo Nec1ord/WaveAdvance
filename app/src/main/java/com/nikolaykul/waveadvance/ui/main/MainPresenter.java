@@ -33,7 +33,7 @@ public class MainPresenter extends Presenter<MainMvpView> {
 
     @Override
     public void init() {
-        clearMaxValues();
+        stopUpdating();
         mLastCoordinate = MathManager.Coordinate.U;
     }
 
@@ -60,13 +60,10 @@ public class MainPresenter extends Presenter<MainMvpView> {
         keepComputingNewCoordinates(mLastCoordinate, x, y, period, tDelta);
     }
 
-    public void clearMaxValues() {
-        mMaxU = Double.MIN_VALUE;
-        mMaxV = Double.MIN_VALUE;
-    }
-
     public void stopUpdating() {
         mSubscriptions.clear();
+        mMaxU = Double.MIN_VALUE;
+        mMaxV = Double.MIN_VALUE;
     }
 
     public void resumeUpdating() {
@@ -74,13 +71,15 @@ public class MainPresenter extends Presenter<MainMvpView> {
     }
 
     private void keepComputingNewCoordinates(MathManager.Coordinate which,
-                                            float x, float y,
-                                            long period, double tDelta) {
+                                             float x, float y,
+                                             long period, double tDelta) {
         stopUpdating();
         rememberLastData(x, y, period, tDelta);
         final Subscription subscription = mManager.updateCoordsByTime(which, x, y, period, tDelta)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(getMvpView()::onResumeUpdating)
+                .doOnUnsubscribe(getMvpView()::onStopUpdating)
                 .subscribe(
                         this::showNewCoordinate,
                         t -> Timber.e(t, "Some error"));
