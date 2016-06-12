@@ -71,6 +71,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/view_height_big"
                 android:background="@color/purple"
+                app:div_line_color="@color/colorAccent"
                 />
 
             <com.nikolaykul.waveadvance.view.TouchableImageView
@@ -79,7 +80,7 @@
                 android:layout_height="match_parent"
                 android:background="@android:color/black"
                 app:dot_color="@color/colorPrimary"
-                app:source_dot_color="@color/colorAccent"
+                app:source_dot_color="@android:color/holo_red_light"
                 app:dot_radius="20"
                 />
 
