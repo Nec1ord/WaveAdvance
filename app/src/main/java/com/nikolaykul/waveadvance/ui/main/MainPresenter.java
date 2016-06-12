@@ -33,7 +33,7 @@ public class MainPresenter extends Presenter<MainMvpView> {
 
     @Override
     public void init() {
-        clearMaxValues();
+        stopUpdating();
         mLastCoordinate = MathManager.Coordinate.U;
     }
 
@@ -48,30 +48,42 @@ public class MainPresenter extends Presenter<MainMvpView> {
 
     public void computeU() {
         mLastCoordinate = MathManager.Coordinate.U;
-        keepComputingNewCoordinates(mLastX, mLastY, mLastPeriod, mLastDeltaT);
+        resumeUpdating();
     }
 
     public void computeV() {
         mLastCoordinate = MathManager.Coordinate.V;
-        keepComputingNewCoordinates(mLastX, mLastY, mLastPeriod, mLastDeltaT);
+        resumeUpdating();
     }
 
     public void keepComputingNewCoordinates(float x, float y, long period, double tDelta) {
+        keepComputingNewCoordinates(mLastCoordinate, x, y, period, tDelta);
+    }
+
+    public void stopUpdating() {
+        mSubscriptions.clear();
+        mMaxU = Double.MIN_VALUE;
+        mMaxV = Double.MIN_VALUE;
+    }
+
+    public void resumeUpdating() {
+        keepComputingNewCoordinates(mLastCoordinate, mLastX, mLastY, mLastPeriod, mLastDeltaT);
+    }
+
+    private void keepComputingNewCoordinates(MathManager.Coordinate which,
+                                             float x, float y,
+                                             long period, double tDelta) {
         stopUpdating();
         rememberLastData(x, y, period, tDelta);
-        final Subscription subscription = mManager.updateCoordsByTime(mLastCoordinate,
-                x, y, period, tDelta)
+        final Subscription subscription = mManager.updateCoordsByTime(which, x, y, period, tDelta)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(getMvpView()::onResumeUpdating)
+                .doOnUnsubscribe(getMvpView()::onStopUpdating)
                 .subscribe(
                         this::showNewCoordinate,
                         t -> Timber.e(t, "Some error"));
         mSubscriptions.add(subscription);
-    }
-
-    public void clearMaxValues() {
-        mMaxU = Double.MIN_VALUE;
-        mMaxV = Double.MIN_VALUE;
     }
 
     private void showNewCoordinate(Pair<Double, Double> coordinate) {
@@ -86,10 +98,6 @@ public class MainPresenter extends Presenter<MainMvpView> {
         }
         // show current
         getMvpView().showNewCoordinate(coordinate);
-    }
-
-    public void stopUpdating() {
-        mSubscriptions.clear();
     }
 
     private void rememberLastData(float x, float y, long period, double tDelta) {

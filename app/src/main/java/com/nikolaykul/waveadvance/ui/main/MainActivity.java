@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.Pair;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.nikolaykul.waveadvance.R;
@@ -22,6 +24,7 @@ import javax.inject.Inject;
 public class MainActivity extends BaseActivity implements MainMvpView, OnTapListener {
     @Inject MainPresenter mPresenter;
     private ActivityMainBinding mBinding;
+    private Menu mMenu;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +33,26 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         initToolbar(mBinding.toolbar);
         mPresenter.initWithView(this);
         mBinding.ivTouchable.postDelayed(this::initSource, 1000);
+    }
+
+    @Override public boolean onCreateOptionsMenu(Menu menu) {
+        mMenu = menu;
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        onResumeUpdating();
+        return true;
+    }
+
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_resume:
+                clearViews();
+                mPresenter.resumeUpdating();
+                break;
+            case R.id.action_stop:
+                mPresenter.stopUpdating();
+                break;
+        }
+        return true;
     }
 
     @Override protected void onStop() {
@@ -55,6 +78,18 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
         mBinding.ivDrawable.addPoint(new Pair<>((float) x, (float) y));
     }
 
+    @Override public void onResumeUpdating() {
+        if (null == mMenu) return;
+        mMenu.findItem(R.id.action_resume).setVisible(false);
+        mMenu.findItem(R.id.action_stop).setVisible(true);
+    }
+
+    @Override public void onStopUpdating() {
+        if (null == mMenu) return;
+        mMenu.findItem(R.id.action_resume).setVisible(true);
+        mMenu.findItem(R.id.action_stop).setVisible(false);
+    }
+
     @Override public void onSingleTap(Dot dot) {
         clearViews();
         mPresenter.keepComputingNewCoordinates(dot.getX(), dot.getY(), 50, 50);
@@ -62,7 +97,6 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
 
     @Override public void onDoubleTap(Dot dot) {
         clearViews();
-        mPresenter.stopUpdating();
         mPresenter.updateSourcePosition(dot.getX(), dot.getY());
     }
 
@@ -72,16 +106,10 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
     }
 
     private void initToolbar(Toolbar toolbar) {
-        toolbar.setTitle(R.string.activity_main_title);
-        toolbar.inflateMenu(R.menu.menu_main);
-        toolbar.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.action_stop:
-                    mPresenter.stopUpdating();
-                    break;
-            }
-            return true;
-        });
+        setSupportActionBar(toolbar);
+        if (null != getSupportActionBar()) {
+            getSupportActionBar().setTitle(R.string.activity_main_title);
+        }
     }
 
     private void setListeners() {
@@ -118,10 +146,8 @@ public class MainActivity extends BaseActivity implements MainMvpView, OnTapList
     }
 
     private void clearViews() {
-        // clear max
+        mPresenter.stopUpdating();
         mBinding.tvMax.setText("");
-        mPresenter.clearMaxValues();
-        // clear image
         mBinding.ivDrawable.clearPoints();
     }
 

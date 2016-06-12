@@ -8,4 +8,6 @@ public interface MainMvpView extends MvpView {
     void showNewCoordinate(Pair<Double, Double> coordinate);
     void showMaxU(double u);
     void showMaxV(double v);
+    void onStopUpdating();
+    void onResumeUpdating();
 }
