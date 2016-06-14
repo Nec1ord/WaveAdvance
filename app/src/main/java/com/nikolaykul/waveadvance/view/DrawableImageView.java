@@ -121,7 +121,7 @@ public class DrawableImageView extends ImageView {
     }
 
     private void removeLastDot(Dot newDot) {
-        if (newDot.getX() < (getWidth() * 4 / 5) || mDots.size() < 2) return;
+        if (newDot.getX() < getWidth() || mDots.size() < 2) return;
         updateAbscissa(mDots.get(0).getX(), mDots.get(1).getX());
         mDots.remove(0);
     }
