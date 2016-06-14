@@ -9,7 +9,5 @@
     <declare-styleable name="DrawableImageView">
         <attr name="div_line_color" format="float"/>
         <attr name="div_line_size" format="float"/>
-        <attr name="div_dot_color" format="float"/>
-        <attr name="div_dot_size" format="float"/>
     </declare-styleable>
 </resources>
