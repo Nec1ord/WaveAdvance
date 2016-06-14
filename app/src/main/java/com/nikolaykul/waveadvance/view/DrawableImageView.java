@@ -17,9 +17,7 @@ import java.util.ArrayList;
 
 public class DrawableImageView extends ImageView {
     private static final float DEFAULT_LINE_SIZE = 5f;
-    private static final float DEFAULT_DOT_SIZE = 7f;
     private static final int DEFAULT_LINE_COLOR = Color.RED;
-    private static final int DEFAULT_DOT_COLOR = Color.WHITE;
     private ArrayList<Dot> mDots;
     private float mSy;
     private float mDy;
@@ -27,7 +25,6 @@ public class DrawableImageView extends ImageView {
     private float maxY;
     private float minY;
     private Paint mLinePaint;
-    private Paint mDotPaint;
 
     public DrawableImageView(Context context) {
         super(context);
@@ -73,10 +70,6 @@ public class DrawableImageView extends ImageView {
             final float y2 = mDots.get(i + 1).getY() * mSy;
             canvas.drawLine(x1, y1, x2, y2, mLinePaint);
         }
-
-        // draw last Dot
-        final Dot lastDot = mDots.get(mDots.size() - 1);
-        canvas.drawPoint(lastDot.getX(), lastDot.getY() * mSy, mDotPaint);
     }
 
     public void addPoint(Pair<Float, Float> point) {
@@ -105,11 +98,6 @@ public class DrawableImageView extends ImageView {
         mLinePaint.setColor(DEFAULT_LINE_COLOR);
         mLinePaint.setStrokeWidth(DEFAULT_LINE_SIZE);
 
-        mDotPaint = new Paint();
-        mDotPaint.setAntiAlias(true);
-        mDotPaint.setColor(DEFAULT_DOT_COLOR);
-        mDotPaint.setStrokeWidth(DEFAULT_DOT_SIZE);
-
         TypedArray ta = context.getTheme().obtainStyledAttributes(attrs,
                 R.styleable.DrawableImageView, 0, 0);
         try {
@@ -117,14 +105,8 @@ public class DrawableImageView extends ImageView {
                     DEFAULT_LINE_SIZE);
             int lineColor = ta.getInteger(R.styleable.DrawableImageView_div_line_color,
                     DEFAULT_LINE_COLOR);
-            float dotSize = ta.getFloat(R.styleable.DrawableImageView_div_dot_size,
-                    DEFAULT_DOT_SIZE);
-            int dotColor = ta.getColor(R.styleable.DrawableImageView_div_dot_color,
-                    DEFAULT_DOT_COLOR);
             mLinePaint.setStrokeWidth(lineSize);
             mLinePaint.setColor(lineColor);
-            mDotPaint.setStrokeWidth(dotSize);
-            mDotPaint.setColor(dotColor);
         } finally {
             ta.recycle();
         }
